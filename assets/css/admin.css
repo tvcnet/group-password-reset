@@ -249,11 +249,14 @@
     grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.8fr);
     max-height: calc(100vh - 420px);
     min-height: 320px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
 }
 
 .gpr-plugin-modal__main,
 .gpr-plugin-modal__sidebar {
-    overflow: auto;
+    overflow: visible;
 }
 
 .gpr-plugin-modal__main {
