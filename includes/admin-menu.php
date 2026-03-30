@@ -77,7 +77,7 @@ function gpr_enqueue_admin_assets($hookSuffix) {
                 'releaseUrl' => 'https://github.com/tvcnet/group-password-reset/releases/tag/v3.0.0',
                 'downloadUrl' => 'https://github.com/tvcnet/group-password-reset/releases/download/v3.0.0/group-password-reset.zip',
                 'repoUrl' => 'https://github.com/tvcnet/group-password-reset',
-                'bannerUrl' => 'https://hackrepair.com/wp-content/uploads/2024/07/banner-772x250-1.png?_t=1721766551',
+                'bannerUrl' => GPR_PLUGIN_URL . 'assets/images/plugin-banner.png',
                 'activeInstalls' => __('Direct GitHub release', 'group-password-reset'),
                 'lastUpdated' => __('Version 3.0.0 release', 'group-password-reset'),
             ),
@@ -133,7 +133,7 @@ function gpr_render_plugin_details_modal() {
             <button type="button" class="gpr-plugin-modal__close" aria-label="<?php esc_attr_e('Close plugin details', 'group-password-reset'); ?>" data-gpr-modal-close="1">×</button>
 
             <div class="gpr-plugin-modal__banner">
-                <img src="https://hackrepair.com/wp-content/uploads/2024/07/banner-772x250-1.png?_t=1721766551" alt="<?php esc_attr_e('Group Password Reset banner', 'group-password-reset'); ?>">
+                <img src="<?php echo esc_url(GPR_PLUGIN_URL . 'assets/images/plugin-banner.png'); ?>" alt="<?php esc_attr_e('Group Password Reset banner', 'group-password-reset'); ?>">
                 <div class="gpr-plugin-modal__banner-copy">
                     <h2 id="gpr-plugin-modal-title"><?php esc_html_e("The Hack Repair Guy's Group Password Reset", 'group-password-reset'); ?></h2>
                 </div>
