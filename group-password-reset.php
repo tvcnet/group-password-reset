@@ -4,6 +4,9 @@
  * Plugin URI: https://hackrepair.com/plugins/group-password-reset
  * Description: Bulk reset WordPress user passwords by role, exclude selected users, and notify affected users with secure reset links.
  * Version: 3.0.0
+ * Requires at least: 6.8.3
+ * Requires PHP: 8.3
+ * Tested up to: 6.8.3
  * Author: Jim Walker
  * Author URI: https://hackrepair.com
  * License: GPL-2.0+

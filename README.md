@@ -4,8 +4,8 @@ Bulk reset WordPress user passwords by role or across the full site, skip exclud
 
 ## Requirements
 
-- WordPress 6.6 or newer
-- PHP 8.1 or newer
+- WordPress 6.8.3 or newer
+- PHP 8.3 or newer
 - Administrator access to the target site
 
 ## Features
@@ -37,6 +37,11 @@ With JavaScript enabled, the plugin processes users in batches of 20 and updates
 
 ## Testing Notes
 
+Baseline compatibility target:
+
+- WordPress 6.8.3
+- PHP 8.3
+
 Recommended manual scenarios:
 
 - Reset a single role with multiple users.
@@ -50,4 +55,4 @@ Recommended manual scenarios:
 - Update the plugin version and changelog.
 - Verify `readme.txt` matches the plugin header and current behavior.
 - Confirm the admin screen loads without PHP notices.
-- Confirm the reset flow works on a stable WordPress release as well as local prerelease builds.
+- Confirm the reset flow works on WordPress 6.8.3 with PHP 8.3, plus any newer local prerelease builds used for forward-compatibility checks.

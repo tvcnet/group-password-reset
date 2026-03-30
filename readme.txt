@@ -2,10 +2,10 @@
 
 Contributors: hackrepairguy
 Tags: password reset, bulk actions, user management, security
-Requires at least: 6.6
-Tested up to: 7.0
+Requires at least: 6.8.3
+Tested up to: 6.8.3
 Stable tag: 3.0.0
-Requires PHP: 8.1
+Requires PHP: 8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -27,6 +27,11 @@ The plugin supports two execution paths:
 
 - JavaScript-enabled browsers process users in batches of 20 and update the results table in place.
 - Browsers without JavaScript fall back to a standard WordPress form submission and return to the admin screen with the same summary data.
+
+Compatibility baseline:
+
+- WordPress 6.8.3
+- PHP 8.3
 
 == Installation ==
 
