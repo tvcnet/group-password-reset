@@ -129,7 +129,10 @@
 
 .gpr-plugin-modal__dialog {
     position: relative;
+    display: flex;
+    flex-direction: column;
     width: min(1040px, calc(100vw - 48px));
+    height: calc(100vh - 48px);
     max-height: calc(100vh - 48px);
     margin: 24px auto;
     background: #fff;
@@ -246,9 +249,9 @@
 
 .gpr-plugin-modal__content {
     display: grid;
+    flex: 1 1 auto;
     grid-template-columns: minmax(0, 1.8fr) minmax(260px, 0.8fr);
-    max-height: calc(100vh - 420px);
-    min-height: 320px;
+    min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
@@ -339,6 +342,7 @@
 
 .gpr-plugin-modal__footer {
     display: flex;
+    flex-shrink: 0;
     gap: 12px;
     justify-content: flex-end;
     padding: 16px;
@@ -353,6 +357,7 @@ body.gpr-modal-open {
 @media (max-width: 900px) {
     .gpr-plugin-modal__dialog {
         width: calc(100vw - 24px);
+        height: calc(100vh - 24px);
         margin: 12px auto;
     }
 
@@ -370,7 +375,6 @@ body.gpr-modal-open {
 
     .gpr-plugin-modal__content {
         grid-template-columns: 1fr;
-        max-height: calc(100vh - 360px);
     }
 
     .gpr-plugin-modal__sidebar {
