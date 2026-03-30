@@ -45,6 +45,7 @@ function gpr_get_download_url() {
 }
 
 require_once GPR_PLUGIN_DIR . 'includes/password-reset.php';
+require_once GPR_PLUGIN_DIR . 'includes/admin-views.php';
 require_once GPR_PLUGIN_DIR . 'includes/admin-menu.php';
 
 function gpr_load_textdomain() {
