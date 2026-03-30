@@ -170,12 +170,13 @@
 .gpr-plugin-modal__banner-copy {
     position: absolute;
     left: 32px;
-    bottom: 28px;
+    right: 32px;
+    bottom: 0;
     max-width: 72%;
     padding: 18px 22px;
     color: #fff;
     background: rgba(17, 24, 39, 0.78);
-    border-radius: 10px;
+    border-radius: 10px 10px 0 0;
 }
 
 .gpr-plugin-modal__banner-copy h2 {
@@ -295,6 +296,7 @@ body.gpr-modal-open {
         left: 16px;
         right: 16px;
         max-width: none;
+        bottom: 0;
     }
 
     .gpr-plugin-modal__content {

@@ -137,7 +137,6 @@ function gpr_render_plugin_details_modal() {
                 <div class="gpr-plugin-modal__banner-copy">
                     <p class="gpr-plugin-modal__eyebrow"><?php esc_html_e('Security Utility', 'group-password-reset'); ?></p>
                     <h2 id="gpr-plugin-modal-title"><?php esc_html_e("The Hack Repair Guy's Group Password Reset", 'group-password-reset'); ?></h2>
-                    <p><?php esc_html_e('Bulk reset WordPress user passwords by role, exclude specific usernames, and notify each user with a secure reset link.', 'group-password-reset'); ?></p>
                 </div>
             </div>
 
