@@ -320,23 +320,21 @@
 
 .gpr-plugin-modal__meta {
     margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
-.gpr-plugin-modal__meta div {
-    padding: 0 0 14px;
-    margin-bottom: 14px;
-    border-bottom: 1px solid #dcdcde;
+.gpr-plugin-modal__meta li {
+    margin: 0 0 10px;
+    color: #646970;
 }
 
-.gpr-plugin-modal__meta dt {
-    margin-bottom: 6px;
-    font-weight: 600;
-    color: #1d2327;
+.gpr-plugin-modal__meta strong {
+    color: #3c434a;
 }
 
-.gpr-plugin-modal__meta dd {
-    margin: 0;
-    color: #50575e;
+.gpr-plugin-modal__meta a {
+    text-decoration: none;
 }
 
 .gpr-plugin-modal__footer {

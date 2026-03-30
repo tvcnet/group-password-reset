@@ -181,16 +181,16 @@ function gpr_render_plugin_details_modal() {
                 </div>
 
                 <aside class="gpr-plugin-modal__sidebar">
-                    <dl class="gpr-plugin-modal__meta">
-                        <div><dt><?php esc_html_e('Version', 'group-password-reset'); ?></dt><dd><?php echo esc_html(GPR_VERSION); ?></dd></div>
-                        <div><dt><?php esc_html_e('Author', 'group-password-reset'); ?></dt><dd><a href="https://hackrepair.com" target="_blank" rel="noopener">Jim Walker</a></dd></div>
-                        <div><dt><?php esc_html_e('Requires WordPress', 'group-password-reset'); ?></dt><dd><?php esc_html_e('6.8.3 or higher', 'group-password-reset'); ?></dd></div>
-                        <div><dt><?php esc_html_e('Requires PHP', 'group-password-reset'); ?></dt><dd><?php esc_html_e('8.3 or higher', 'group-password-reset'); ?></dd></div>
-                        <div><dt><?php esc_html_e('Tested up to', 'group-password-reset'); ?></dt><dd><?php esc_html_e('6.8.3', 'group-password-reset'); ?></dd></div>
-                        <div><dt><?php esc_html_e('Download', 'group-password-reset'); ?></dt><dd><a href="https://github.com/tvcnet/group-password-reset/releases/download/v3.0.0/group-password-reset.zip" target="_blank" rel="noopener"><?php esc_html_e('Official plugin zip', 'group-password-reset'); ?></a></dd></div>
-                        <div><dt><?php esc_html_e('Plugin page', 'group-password-reset'); ?></dt><dd><a href="https://hackrepair.com/plugins/group-password-reset" target="_blank" rel="noopener"><?php esc_html_e('HackRepair.com', 'group-password-reset'); ?></a></dd></div>
-                        <div><dt><?php esc_html_e('Repository', 'group-password-reset'); ?></dt><dd><a href="https://github.com/tvcnet/group-password-reset" target="_blank" rel="noopener"><?php esc_html_e('GitHub repository', 'group-password-reset'); ?></a></dd></div>
-                    </dl>
+                    <ul class="gpr-plugin-modal__meta">
+                        <li><strong><?php esc_html_e('Version:', 'group-password-reset'); ?></strong> <?php echo esc_html(GPR_VERSION); ?></li>
+                        <li><strong><?php esc_html_e('Author:', 'group-password-reset'); ?></strong> <a href="https://hackrepair.com" target="_blank" rel="noopener">Jim Walker</a></li>
+                        <li><strong><?php esc_html_e('Last Updated:', 'group-password-reset'); ?></strong> <?php esc_html_e('March 30, 2026', 'group-password-reset'); ?></li>
+                        <li><strong><?php esc_html_e('Requires WordPress Version:', 'group-password-reset'); ?></strong> <?php esc_html_e('6.8.3 or higher', 'group-password-reset'); ?></li>
+                        <li><strong><?php esc_html_e('Compatible up to:', 'group-password-reset'); ?></strong> <?php esc_html_e('6.8.3', 'group-password-reset'); ?></li>
+                        <li><strong><?php esc_html_e('Active Installations:', 'group-password-reset'); ?></strong> <?php esc_html_e('Direct distribution', 'group-password-reset'); ?></li>
+                        <li><a href="https://github.com/tvcnet/group-password-reset" target="_blank" rel="noopener"><?php esc_html_e('GitHub Plugin Page »', 'group-password-reset'); ?></a></li>
+                        <li><a href="https://hackrepair.com/plugins/group-password-reset" target="_blank" rel="noopener"><?php esc_html_e('Plugin Homepage »', 'group-password-reset'); ?></a></li>
+                    </ul>
                 </aside>
             </div>
 
