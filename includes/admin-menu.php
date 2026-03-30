@@ -68,18 +68,22 @@ function gpr_enqueue_admin_assets($hookSuffix) {
             'detailsModal' => array(
                 'pluginName' => __("The Hack Repair Guy's Group Password Reset", 'group-password-reset'),
                 'versionLabel' => GPR_VERSION,
-                'requiresWp' => '6.8.3',
-                'requiresPhp' => '8.3',
-                'testedUpTo' => '6.8.3',
-                'authorName' => 'Jim Walker',
-                'authorUrl' => 'https://hackrepair.com',
-                'pluginUrl' => 'https://hackrepair.com/plugins/group-password-reset',
-                'releaseUrl' => 'https://github.com/tvcnet/group-password-reset/releases/tag/v3.0.0',
-                'downloadUrl' => 'https://github.com/tvcnet/group-password-reset/releases/download/v3.0.0/group-password-reset.zip',
-                'repoUrl' => 'https://github.com/tvcnet/group-password-reset',
+                'requiresWp' => GPR_REQUIRES_AT_LEAST,
+                'requiresPhp' => GPR_REQUIRES_PHP,
+                'testedUpTo' => GPR_TESTED_UP_TO,
+                'authorName' => GPR_AUTHOR_NAME,
+                'authorUrl' => GPR_AUTHOR_URI,
+                'pluginUrl' => GPR_PLUGIN_URI,
+                'releaseUrl' => gpr_get_release_url(),
+                'downloadUrl' => gpr_get_download_url(),
+                'repoUrl' => GPR_REPO_URL,
                 'bannerUrl' => GPR_PLUGIN_URL . 'assets/images/plugin-banner.png',
                 'activeInstalls' => __('Direct GitHub release', 'group-password-reset'),
-                'lastUpdated' => __('Version 3.0.0 release', 'group-password-reset'),
+                'lastUpdated' => sprintf(
+                    /* translators: %s: plugin version */
+                    __('Version %s release', 'group-password-reset'),
+                    GPR_VERSION
+                ),
             ),
             'messages' => array(
                 'startError' => __('Unable to start the password reset job.', 'group-password-reset'),
@@ -187,7 +191,7 @@ function gpr_render_plugin_details_modal() {
                             <li><?php esc_html_e('Modernized the admin experience with a native WordPress layout.', 'group-password-reset'); ?></li>
                             <li><?php esc_html_e('Added a non-JavaScript fallback for the reset workflow.', 'group-password-reset'); ?></li>
                             <li><?php esc_html_e('Improved batching, result reporting, and exclusion handling.', 'group-password-reset'); ?></li>
-                            <li><?php esc_html_e('Updated compatibility guidance to WordPress 6.8.3 and PHP 8.3.', 'group-password-reset'); ?></li>
+                            <li><?php echo esc_html(sprintf(__('Updated compatibility guidance to WordPress %1$s and PHP %2$s.', 'group-password-reset'), GPR_TESTED_UP_TO, GPR_REQUIRES_PHP)); ?></li>
                         </ul>
                     </section>
                 </div>
@@ -195,20 +199,20 @@ function gpr_render_plugin_details_modal() {
                 <aside class="gpr-plugin-modal__sidebar">
                     <ul class="gpr-plugin-modal__meta">
                         <li><strong><?php esc_html_e('Version:', 'group-password-reset'); ?></strong> <?php echo esc_html(GPR_VERSION); ?></li>
-                        <li><strong><?php esc_html_e('Author:', 'group-password-reset'); ?></strong> <a href="https://hackrepair.com" target="_blank" rel="noopener">Jim Walker</a></li>
+                        <li><strong><?php esc_html_e('Author:', 'group-password-reset'); ?></strong> <a href="<?php echo esc_url(GPR_AUTHOR_URI); ?>" target="_blank" rel="noopener"><?php echo esc_html(GPR_AUTHOR_NAME); ?></a></li>
                         <li><strong><?php esc_html_e('Last Updated:', 'group-password-reset'); ?></strong> <?php esc_html_e('March 30, 2026', 'group-password-reset'); ?></li>
-                        <li><strong><?php esc_html_e('Requires WordPress Version:', 'group-password-reset'); ?></strong> <?php esc_html_e('6.8.3 or higher', 'group-password-reset'); ?></li>
-                        <li><strong><?php esc_html_e('Compatible up to:', 'group-password-reset'); ?></strong> <?php esc_html_e('6.9.4', 'group-password-reset'); ?></li>
+                        <li><strong><?php esc_html_e('Requires WordPress Version:', 'group-password-reset'); ?></strong> <?php echo esc_html(sprintf(__('%s or higher', 'group-password-reset'), GPR_REQUIRES_AT_LEAST)); ?></li>
+                        <li><strong><?php esc_html_e('Compatible up to:', 'group-password-reset'); ?></strong> <?php echo esc_html(GPR_TESTED_UP_TO); ?></li>
                         <li><strong><?php esc_html_e('Active Installations:', 'group-password-reset'); ?></strong> <?php esc_html_e('Direct distribution', 'group-password-reset'); ?></li>
-                        <li><a href="https://github.com/tvcnet/group-password-reset" target="_blank" rel="noopener"><?php esc_html_e('GitHub Plugin Page »', 'group-password-reset'); ?></a></li>
-                        <li><a href="https://hackrepair.com/plugins/group-password-reset" target="_blank" rel="noopener"><?php esc_html_e('Plugin Homepage »', 'group-password-reset'); ?></a></li>
+                        <li><a href="<?php echo esc_url(GPR_REPO_URL); ?>" target="_blank" rel="noopener"><?php esc_html_e('GitHub Plugin Page »', 'group-password-reset'); ?></a></li>
+                        <li><a href="<?php echo esc_url(GPR_PLUGIN_URI); ?>" target="_blank" rel="noopener"><?php esc_html_e('Plugin Homepage »', 'group-password-reset'); ?></a></li>
                     </ul>
                 </aside>
             </div>
 
             <div class="gpr-plugin-modal__footer">
-                <a class="button button-primary" href="https://github.com/tvcnet/group-password-reset/releases/download/v3.0.0/group-password-reset.zip" target="_blank" rel="noopener"><?php esc_html_e('Download Plugin', 'group-password-reset'); ?></a>
-                <a class="button" href="https://hackrepair.com/plugins/group-password-reset" target="_blank" rel="noopener"><?php esc_html_e('Plugin Homepage', 'group-password-reset'); ?></a>
+                <a class="button button-primary" href="<?php echo esc_url(gpr_get_download_url()); ?>" target="_blank" rel="noopener"><?php esc_html_e('Download Plugin', 'group-password-reset'); ?></a>
+                <a class="button" href="<?php echo esc_url(GPR_PLUGIN_URI); ?>" target="_blank" rel="noopener"><?php esc_html_e('Plugin Homepage', 'group-password-reset'); ?></a>
             </div>
         </div>
     </div>

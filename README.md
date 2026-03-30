@@ -39,7 +39,7 @@ With JavaScript enabled, the plugin processes users in batches of 20 and updates
 
 Baseline compatibility target:
 
-- WordPress 6.8.3
+- WordPress 6.9.4
 - PHP 8.3
 
 Recommended manual scenarios:
@@ -55,4 +55,4 @@ Recommended manual scenarios:
 - Update the plugin version and changelog.
 - Verify `readme.txt` matches the plugin header and current behavior.
 - Confirm the admin screen loads without PHP notices.
-- Confirm the reset flow works on WordPress 6.8.3 with PHP 8.3, plus any newer local prerelease builds used for forward-compatibility checks.
+- Confirm the reset flow works on WordPress 6.9.4 with PHP 8.3, plus any newer local prerelease builds used for forward-compatibility checks.

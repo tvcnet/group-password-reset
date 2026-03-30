@@ -3,7 +3,7 @@
 Contributors: hackrepairguy
 Tags: password reset, bulk actions, user management, security
 Requires at least: 6.8.3
-Tested up to: 6.8.3
+Tested up to: 6.9.4
 Stable tag: 3.0.0
 Requires PHP: 8.3
 License: GPLv2 or later
@@ -30,7 +30,7 @@ The plugin supports two execution paths:
 
 Compatibility baseline:
 
-- WordPress 6.8.3
+- WordPress 6.9.4
 - PHP 8.3
 
 == Installation ==
