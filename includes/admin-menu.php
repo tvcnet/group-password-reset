@@ -149,7 +149,7 @@ function gpr_render_plugin_details_modal() {
                 <div class="gpr-plugin-modal__main">
                     <section class="gpr-plugin-modal__panel is-active" data-gpr-panel="description">
                         <p class="gpr-plugin-modal__eyebrow"><?php esc_html_e('Security Utility', 'group-password-reset'); ?></p>
-                        <p><?php esc_html_e('Group Password Reset is built for administrators who need to invalidate passwords quickly across a role or an entire site. It is particularly useful for post-hack cleanup, membership sites, and any workflow that requires mass credential rotation.', 'group-password-reset'); ?></p>
+                        <p><strong><?php esc_html_e('Group Password Reset is built for administrators who need to invalidate passwords quickly across a role or an entire site. It is particularly useful for post-hack cleanup, membership sites, and any workflow that requires mass credential rotation.', 'group-password-reset'); ?></strong></p>
                         <ul>
                             <li><?php esc_html_e('Reset by role or across all users', 'group-password-reset'); ?></li>
                             <li><?php esc_html_e('Exclude specific usernames from a run', 'group-password-reset'); ?></li>
