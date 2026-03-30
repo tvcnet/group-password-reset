@@ -54,16 +54,35 @@ function gpr_get_scope_label($role) {
 }
 
 function gpr_get_target_users($role) {
+    return get_users(gpr_get_target_user_query_args($role));
+}
+
+function gpr_get_target_user_query_args($role, $number = 0, $offset = 0, $countTotal = false) {
     $args = array(
-        'orderby' => 'login',
+        'orderby' => 'ID',
         'order' => 'ASC',
     );
+
+    if ($number > 0) {
+        $args['number'] = $number;
+        $args['offset'] = $offset;
+    }
+
+    if ($countTotal) {
+        $args['count_total'] = true;
+    }
 
     if ($role !== '') {
         $args['role'] = $role;
     }
 
-    return get_users($args);
+    return $args;
+}
+
+function gpr_count_target_users($role) {
+    $query = new WP_User_Query(gpr_get_target_user_query_args($role, 1, 0, true));
+
+    return (int) $query->get_total();
 }
 
 function gpr_format_user_role_label($user) {
@@ -86,37 +105,85 @@ function gpr_format_user_role_label($user) {
 }
 
 function gpr_prepare_reset_run($role, $excludedUsernames) {
-    $users = gpr_get_target_users($role);
-    $excludedList = gpr_get_excluded_usernames_list($excludedUsernames);
-    $queuedUsers = array();
+    $totalUsers = gpr_count_target_users($role);
+    $excludedData = gpr_get_excluded_run_data($role, $excludedUsernames);
+
+    return array(
+        'total_users' => $totalUsers,
+        'queued_total' => max(0, $totalUsers - count($excludedData['excluded_ids'])),
+        'excluded_ids' => $excludedData['excluded_ids'],
+        'skipped_results' => $excludedData['skipped_results'],
+    );
+}
+
+function gpr_get_excluded_run_data($role, $excludedUsernames) {
+    $excludedIds = array();
     $skippedResults = array();
 
-    foreach ($users as $user) {
-        if (in_array($user->user_login, $excludedList, true)) {
-            $skippedResults[] = array(
-                'username' => $user->user_login,
-                'email' => $user->user_email,
-                'role' => gpr_format_user_role_label($user),
-                'status' => 'skipped',
-                'message' => __('Excluded from this reset run.', 'group-password-reset'),
-            );
+    foreach (gpr_get_excluded_usernames_list($excludedUsernames) as $username) {
+        $user = get_user_by('login', $username);
+
+        if (!$user instanceof WP_User) {
             continue;
         }
 
-        $queuedUsers[] = array(
-            'ID' => (int) $user->ID,
-            'user_login' => $user->user_login,
-            'user_email' => $user->user_email,
-            'display_name' => $user->display_name,
-            'roles' => array_values((array) $user->roles),
+        if ($role !== '' && !in_array($role, (array) $user->roles, true)) {
+            continue;
+        }
+
+        $excludedIds[] = (int) $user->ID;
+        $skippedResults[] = array(
+            'username' => $user->user_login,
+            'email' => $user->user_email,
+            'role' => gpr_format_user_role_label($user),
+            'status' => 'skipped',
+            'message' => __('Excluded from this reset run.', 'group-password-reset'),
         );
     }
 
     return array(
-        'total_users' => count($users),
-        'queued_users' => array_values($queuedUsers),
+        'excluded_ids' => array_values(array_unique($excludedIds)),
         'skipped_results' => $skippedResults,
     );
+}
+
+function gpr_normalize_job_user($user) {
+    return array(
+        'ID' => (int) $user->ID,
+        'user_login' => $user->user_login,
+        'user_email' => $user->user_email,
+        'display_name' => $user->display_name,
+        'roles' => array_values((array) $user->roles),
+    );
+}
+
+function gpr_get_job_batch_users(&$job) {
+    $batch = array();
+    $remaining = $job['total_users'] - $job['offset'];
+
+    if ($remaining <= 0) {
+        return $batch;
+    }
+
+    $querySize = min(GPR_CHUNK_SIZE, $remaining);
+    $users = get_users(gpr_get_target_user_query_args($job['role'], $querySize, $job['offset']));
+
+    if (empty($users)) {
+        $job['offset'] = $job['total_users'];
+        return $batch;
+    }
+
+    $job['offset'] += count($users);
+
+    foreach ($users as $user) {
+        if (in_array((int) $user->ID, $job['excluded_ids'], true)) {
+            continue;
+        }
+
+        $batch[] = gpr_normalize_job_user($user);
+    }
+
+    return $batch;
 }
 
 function gpr_reset_single_user($user) {
@@ -259,8 +326,9 @@ function gpr_ajax_start_job() {
         'scope_label' => gpr_get_scope_label($role),
         'excluded_usernames' => $excludedUsernames,
         'total_users' => $run['total_users'],
-        'queued_total' => count($run['queued_users']),
-        'remaining_users' => $run['queued_users'],
+        'queued_total' => $run['queued_total'],
+        'offset' => 0,
+        'excluded_ids' => $run['excluded_ids'],
         'initial_results' => $run['skipped_results'],
         'batch_keys' => array(),
         'summary' => array(
@@ -276,7 +344,7 @@ function gpr_ajax_start_job() {
         array(
             'summary' => gpr_build_summary($job),
             'scopeLabel' => $job['scope_label'],
-            'hasQueuedUsers' => !empty($job['remaining_users']),
+            'hasQueuedUsers' => $job['queued_total'] > 0,
             'results' => $job['initial_results'],
             'excludedUsernames' => $excludedUsernames,
         )
@@ -296,7 +364,7 @@ function gpr_ajax_process_job() {
         wp_send_json_error(__('No reset job is currently active.', 'group-password-reset'), 400);
     }
 
-    $batch = array_slice($job['remaining_users'], 0, GPR_CHUNK_SIZE);
+    $batch = gpr_get_job_batch_users($job);
     $batchResults = array();
 
     foreach ($batch as $user) {
@@ -316,8 +384,7 @@ function gpr_ajax_process_job() {
         $job['batch_keys'][] = $batchKey;
     }
 
-    $job['remaining_users'] = array_slice($job['remaining_users'], count($batch));
-    $completed = empty($job['remaining_users']);
+    $completed = $job['offset'] >= $job['total_users'];
     $summary = gpr_build_summary($job);
 
     if ($completed) {

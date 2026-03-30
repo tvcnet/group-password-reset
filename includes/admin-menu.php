@@ -219,26 +219,38 @@ function gpr_handle_reset_request() {
     $results = $run['skipped_results'];
     $summary = array(
         'total' => $run['total_users'],
-        'queued' => count($run['queued_users']),
-        'processed' => 0,
+        'queued' => $run['queued_total'],
+        'processed' => count($run['skipped_results']),
         'success' => 0,
         'failed' => 0,
         'skipped' => count($run['skipped_results']),
     );
+    $job = array(
+        'role' => $role,
+        'total_users' => $run['total_users'],
+        'offset' => 0,
+        'excluded_ids' => $run['excluded_ids'],
+    );
 
-    foreach ($run['queued_users'] as $user) {
-        $result = gpr_reset_single_user($user);
-        $results[] = $result;
-        $summary['processed']++;
+    while ($job['offset'] < $job['total_users']) {
+        $batch = gpr_get_job_batch_users($job);
 
-        if ($result['status'] === 'success') {
-            $summary['success']++;
-        } else {
-            $summary['failed']++;
+        if (empty($batch)) {
+            continue;
+        }
+
+        foreach ($batch as $user) {
+            $result = gpr_reset_single_user($user);
+            $results[] = $result;
+            $summary['processed']++;
+
+            if ($result['status'] === 'success') {
+                $summary['success']++;
+            } else {
+                $summary['failed']++;
+            }
         }
     }
-
-    $summary['processed'] += $summary['skipped'];
 
     gpr_store_flash_results(
         array(
