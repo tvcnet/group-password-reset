@@ -85,6 +85,18 @@ function gpr_enqueue_admin_assets($hookSuffix) {
                 'startError' => __('Unable to start the password reset job.', 'group-password-reset'),
                 'processError' => __('Unable to continue the password reset job.', 'group-password-reset'),
                 'complete' => __('Password reset complete.', 'group-password-reset'),
+                'preparingJob' => __('Preparing password reset job…', 'group-password-reset'),
+                'processingJob' => __('Processing password resets…', 'group-password-reset'),
+                'noQueuedUsers' => __('No queued users remained after exclusions.', 'group-password-reset'),
+                'requestFailed' => __('Request failed.', 'group-password-reset'),
+                'allUsers' => __('All users', 'group-password-reset'),
+                'scope' => __('Scope', 'group-password-reset'),
+                'matchedUsers' => __('Matched users', 'group-password-reset'),
+                'processed' => __('Processed', 'group-password-reset'),
+                'success' => __('Success', 'group-password-reset'),
+                'failed' => __('Failed', 'group-password-reset'),
+                'skipped' => __('Skipped', 'group-password-reset'),
+                'excludedUsernames' => __('Excluded usernames', 'group-password-reset'),
             ),
         )
     );

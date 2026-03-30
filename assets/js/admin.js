@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     toggleBusyState(true);
-    setProgress(0, 'Preparing password reset job…', '');
+    setProgress(0, window.gprAdmin.messages.preparingJob, '');
     resultsBody.innerHTML = '';
     resultsSummary.innerHTML = '';
     resultsPanel.hidden = false;
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderSummary(startResponse.summary, startResponse.scopeLabel, startResponse.excludedUsernames);
 
       if (!startResponse.hasQueuedUsers) {
-        setProgress(100, window.gprAdmin.messages.complete, 'No queued users remained after exclusions.');
+        setProgress(100, window.gprAdmin.messages.complete, window.gprAdmin.messages.noQueuedUsers);
         toggleBusyState(false);
         return;
       }
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const data = await response.json();
 
     if (!response.ok || !data.success) {
-      throw new Error(data?.data || 'Request failed.');
+      throw new Error(data?.data || window.gprAdmin.messages.requestFailed);
     }
 
     return data.data;
@@ -149,14 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderSummary(summary, scopeLabel, excludedUsernames) {
     resultsSummary.innerHTML = `
       <div class="gpr-summary-grid">
-        <div><strong>Scope:</strong> ${escapeHtml(scopeLabel || 'All users')}</div>
-        <div><strong>Matched users:</strong> ${summary.total}</div>
-        <div><strong>Processed:</strong> ${summary.processed}</div>
-        <div><strong>Success:</strong> ${summary.success}</div>
-        <div><strong>Failed:</strong> ${summary.failed}</div>
-        <div><strong>Skipped:</strong> ${summary.skipped}</div>
+        <div><strong>${escapeHtml(window.gprAdmin.messages.scope)}:</strong> ${escapeHtml(scopeLabel || window.gprAdmin.messages.allUsers)}</div>
+        <div><strong>${escapeHtml(window.gprAdmin.messages.matchedUsers)}:</strong> ${summary.total}</div>
+        <div><strong>${escapeHtml(window.gprAdmin.messages.processed)}:</strong> ${summary.processed}</div>
+        <div><strong>${escapeHtml(window.gprAdmin.messages.success)}:</strong> ${summary.success}</div>
+        <div><strong>${escapeHtml(window.gprAdmin.messages.failed)}:</strong> ${summary.failed}</div>
+        <div><strong>${escapeHtml(window.gprAdmin.messages.skipped)}:</strong> ${summary.skipped}</div>
       </div>
-      ${excludedUsernames ? `<p><strong>Excluded usernames:</strong> ${escapeHtml(excludedUsernames)}</p>` : ''}
+      ${excludedUsernames ? `<p><strong>${escapeHtml(window.gprAdmin.messages.excludedUsernames)}:</strong> ${escapeHtml(excludedUsernames)}</p>` : ''}
     `;
   }
 
@@ -165,7 +165,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const total = Number(summary.total || 0);
     const percent = total > 0 ? Math.round((processed / total) * 100) : 100;
 
-    setProgress(percent, 'Processing password resets…', buildProgressMeta(summary));
+    setProgress(percent, window.gprAdmin.messages.processingJob, buildProgressMeta(summary));
   }
 
   function buildProgressMeta(summary) {
