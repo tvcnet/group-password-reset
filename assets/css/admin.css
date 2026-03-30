@@ -1,0 +1,112 @@
+.gpr-admin-page {
+    max-width: 980px;
+}
+
+.gpr-lead {
+    max-width: 70ch;
+    color: #50575e;
+}
+
+.gpr-card {
+    margin-top: 20px;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #dcdcde;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.gpr-form {
+    display: grid;
+    gap: 20px;
+}
+
+.gpr-field {
+    display: grid;
+    gap: 8px;
+}
+
+.gpr-field label {
+    font-weight: 600;
+}
+
+.gpr-field select,
+.gpr-field textarea {
+    width: 100%;
+    max-width: 520px;
+}
+
+.gpr-confirmation {
+    padding: 16px;
+    background: #f6f7f7;
+    border-radius: 6px;
+}
+
+.gpr-actions {
+    display: grid;
+    gap: 8px;
+}
+
+.gpr-progress {
+    padding: 16px;
+    background: #f0f6fc;
+    border: 1px solid #c5d9ed;
+    border-radius: 6px;
+}
+
+.gpr-progress__bar {
+    width: 100%;
+    height: 16px;
+}
+
+.gpr-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.gpr-results-table th,
+.gpr-results-table td {
+    vertical-align: top;
+}
+
+.gpr-status {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.gpr-status--success {
+    color: #0f5132;
+    background: #d1e7dd;
+}
+
+.gpr-status--failed {
+    color: #842029;
+    background: #f8d7da;
+}
+
+.gpr-status--skipped {
+    color: #664d03;
+    background: #fff3cd;
+}
+
+.gpr-steps {
+    margin: 0;
+    padding-left: 18px;
+}
+
+@media (max-width: 782px) {
+    .gpr-card {
+        padding: 16px;
+    }
+
+    .gpr-results-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
