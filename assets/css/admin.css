@@ -342,12 +342,32 @@
 
 .gpr-plugin-modal__footer {
     display: flex;
+    flex-direction: column;
     flex-shrink: 0;
     gap: 12px;
-    justify-content: flex-end;
+    align-items: flex-end;
     padding: 16px;
     border-top: 1px solid #dcdcde;
     background: #fff;
+}
+
+.gpr-plugin-modal__footer-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.gpr-plugin-modal__donate-button {
+    color: #fff !important;
+    background: #e87022 !important;
+    border-color: #c65f1b !important;
+}
+
+.gpr-plugin-modal__donate-button:hover,
+.gpr-plugin-modal__donate-button:focus {
+    color: #fff !important;
+    background: #cc621b !important;
+    border-color: #a94f16 !important;
 }
 
 body.gpr-modal-open {
@@ -380,5 +400,9 @@ body.gpr-modal-open {
     .gpr-plugin-modal__sidebar {
         border-left: 0;
         border-top: 1px solid #dcdcde;
+    }
+
+    .gpr-plugin-modal__footer-actions {
+        flex-wrap: wrap;
     }
 }
