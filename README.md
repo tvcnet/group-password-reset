@@ -1,6 +1,6 @@
 # The Hack Repair Guy's Group Password Reset
 
-Bulk reset WordPress user passwords by scope, skip excluded usernames, and notify affected users with secure password reset links.
+Bulk reset WordPress user passwords by scope, skip excluded usernames, and optionally notify affected users with secure password reset links.
 
 ## Requirements
 
@@ -12,26 +12,33 @@ Bulk reset WordPress user passwords by scope, skip excluded usernames, and notif
 
 - Reset passwords for all users, a single role, or `Administrator (excluding current user)`
 - Persist excluded usernames between runs
-- Show skipped users in the results table
+- Show skipped users in the active results table
 - Send secure password reset links by email instead of exposing raw passwords
+- Support a reset-only mode that skips email when admins need to communicate through another channel
 - Support both JavaScript-enhanced batch processing and a chunked non-JavaScript fallback
 - Store async progress per reset run so multiple tabs do not overwrite each other
+- Persist only summary counts after completion instead of storing row-level results server-side
+- Write audit-log entries for reset job creation and completion
 
 ## How It Works
 
 1. Open the **Group Password Reset** admin screen.
 2. Choose **All users**, a specific role, or **Administrator (excluding current user)**.
 3. Enter comma-separated usernames to exclude.
-4. Confirm that you want to invalidate current passwords.
-5. Start the reset.
+4. Choose whether to attempt email notifications or run in reset-only mode.
+5. Confirm that you want to invalidate current passwords.
+6. Start the reset.
 
-With JavaScript enabled, the plugin processes users in batches of 20 and updates the results table in place. Without JavaScript, the form submits through WordPress `admin-post.php`, processes the reset in redirecting batches, and returns to the admin screen with the final summary and per-user results.
+With JavaScript enabled, the plugin processes users in batches of 20 and updates the results table in place. Without JavaScript, the form submits through WordPress `admin-post.php`, processes the reset in redirecting batches, and returns to the admin screen with the final summary.
+
+When email mode is enabled, the plugin resets passwords first and then attempts to send secure reset-link emails. Mail failures do not roll back the reset, so the no-email mode is the safer option when admins plan to communicate manually.
 
 ## Architecture Notes
 
 - `group-password-reset.php` is the bootstrap file and loads the admin and reset subsystems.
 - `includes/admin-menu.php` owns the admin screen, asset registration, and the non-JavaScript form handler.
-- `includes/password-reset.php` owns shared reset logic, role-scope handling, transient-backed jobs, result formatting, and AJAX endpoints.
+- `includes/password-reset.php` owns shared reset logic, role-scope handling, summary-backed job state, result formatting, and AJAX endpoints.
+- `includes/audit-log.php` owns the audit table schema and event logging.
 - `assets/js/admin.js` progressively enhances the admin screen with async batching.
 - `assets/css/admin.css` keeps the UI aligned with a native WordPress admin layout.
 
@@ -58,6 +65,8 @@ Recommended manual scenarios:
 - Run the tool with a role that has no users.
 - Trigger a run with JavaScript disabled to verify the fallback path.
 - Verify results distinguish `success`, `failed`, and `skipped`.
+- Verify the audit log records start and completion events without storing target usernames or emails.
+- Verify completed runs retain counts-only summary data after reload.
 
 ## Release Checklist
 

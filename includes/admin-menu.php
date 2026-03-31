@@ -64,21 +64,22 @@ function gpr_enqueue_admin_assets( $hook_suffix ) {
 			'nonce'     => wp_create_nonce( 'gpr_job_nonce' ),
 			'chunkSize' => GPR_CHUNK_SIZE,
 			'messages'  => array(
-				'startError'        => __( 'Unable to start the password reset job.', 'group-password-reset' ),
-				'processError'      => __( 'Unable to continue the password reset job.', 'group-password-reset' ),
-				'complete'          => __( 'Password reset complete.', 'group-password-reset' ),
-				'preparingJob'      => __( 'Preparing password reset job…', 'group-password-reset' ),
-				'processingJob'     => __( 'Processing password resets…', 'group-password-reset' ),
-				'noQueuedUsers'     => __( 'No queued users remained after exclusions.', 'group-password-reset' ),
-				'requestFailed'     => __( 'Request failed.', 'group-password-reset' ),
-				'allUsers'          => __( 'All users', 'group-password-reset' ),
-				'scope'             => __( 'Scope', 'group-password-reset' ),
-				'matchedUsers'      => __( 'Matched users', 'group-password-reset' ),
-				'processed'         => __( 'Processed', 'group-password-reset' ),
-				'success'           => __( 'Success', 'group-password-reset' ),
-				'failed'            => __( 'Failed', 'group-password-reset' ),
-				'skipped'           => __( 'Skipped', 'group-password-reset' ),
-				'excludedUsernames' => __( 'Excluded usernames', 'group-password-reset' ),
+				'startError'       => __( 'Unable to start the password reset job.', 'group-password-reset' ),
+				'processError'     => __( 'Unable to continue the password reset job.', 'group-password-reset' ),
+				'complete'         => __( 'Password reset complete.', 'group-password-reset' ),
+				'preparingJob'     => __( 'Preparing password reset job…', 'group-password-reset' ),
+				'processingJob'    => __( 'Processing password resets…', 'group-password-reset' ),
+				'noQueuedUsers'    => __( 'No queued users remained after exclusions.', 'group-password-reset' ),
+				'requestFailed'    => __( 'Request failed.', 'group-password-reset' ),
+				'allUsers'         => __( 'All users', 'group-password-reset' ),
+				'scope'            => __( 'Scope', 'group-password-reset' ),
+				'matchedUsers'     => __( 'Matched users', 'group-password-reset' ),
+				'processed'        => __( 'Processed', 'group-password-reset' ),
+				'success'          => __( 'Success', 'group-password-reset' ),
+				'failed'           => __( 'Failed', 'group-password-reset' ),
+				'skipped'          => __( 'Skipped', 'group-password-reset' ),
+				'notificationMode' => __( 'Notification mode', 'group-password-reset' ),
+				'excludedAccounts' => __( 'Excluded accounts', 'group-password-reset' ),
 			),
 		)
 	);
@@ -175,17 +176,11 @@ function gpr_handle_reset_request() {
 
 	$job               = gpr_create_reset_job( $role, $excluded_usernames, get_current_user_id() );
 	$job['skip_email'] = $skip_email;
+	gpr_log_job_event( $job, 'job_started', __( 'Reset job created.', 'group-password-reset' ) );
 
 	if ( $job['queued_total'] <= 0 ) {
-		gpr_store_flash_results(
-			array(
-				'summary'            => gpr_build_summary( $job ),
-				'results'            => $job['initial_results'],
-				'scope_label'        => $job['scope_label'],
-				'excluded_usernames' => $job['excluded_usernames'],
-				'mode'               => 'fallback',
-			)
-		);
+		gpr_store_flash_results( gpr_build_results_payload( $job, 'fallback', array(), false ) );
+		gpr_log_job_event( $job, 'job_completed', gpr_get_audit_completion_message( $job ) );
 		wp_safe_redirect( gpr_get_admin_page_url() );
 		exit;
 	}

@@ -47,6 +47,18 @@
     gap: 8px;
 }
 
+.gpr-warning {
+    padding: 14px 16px;
+    background: #fcf9e8;
+    border: 1px solid #dba617;
+    border-radius: 6px;
+    color: #3c434a;
+}
+
+.gpr-warning p {
+    margin: 0;
+}
+
 .gpr-progress {
     padding: 16px;
     background: #f0f6fc;
@@ -69,6 +81,10 @@
 .gpr-results-table th,
 .gpr-results-table td {
     vertical-align: top;
+}
+
+.gpr-results-note {
+    margin: 0 0 12px;
 }
 
 .gpr-status {

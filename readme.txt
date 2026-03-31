@@ -4,7 +4,7 @@ Contributors: hackrepairguy
 Tags: password reset, bulk actions, user management, security
 Requires at least: 6.8.3
 Tested up to: 6.9
-Stable tag: 3.0.0
+Stable tag: 3.1.0
 Requires PHP: 8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -21,13 +21,20 @@ Use it to:
 - reset passwords for all users
 - reset administrator accounts while automatically excluding the current administrator
 - exclude specific usernames from a run
-- notify each affected user with a secure password reset link
-- review success, failure, and skipped results after each run
+- attempt to notify each affected user with a secure password reset link
+- run in reset-only mode without sending email
+- review success, failure, and skipped summaries after each run
+- retain a durable audit trail for security-sensitive operations
 
 The plugin supports two execution paths:
 
 - JavaScript-enabled browsers process users in batches of 20 and update the results table in place.
 - Browsers without JavaScript fall back to a chunked WordPress `admin-post.php` flow that redirects between batches and returns to the admin screen with the same final summary data.
+
+Operational notes:
+
+- Detailed per-user result rows are shown during the active JavaScript run, but only summary counts are persisted after completion.
+- When email mode is enabled, passwords are invalidated before reset-link emails are attempted. Mail failures do not roll back the reset.
 
 Compatibility baseline:
 
@@ -70,11 +77,22 @@ Excluded usernames are skipped, shown in the results table, and persisted for th
 
 Each affected user receives a secure WordPress password reset link so they can choose a new password themselves.
 
+= What happens if email delivery fails? =
+
+Passwords are still reset first. If your mail configuration fails, users may be locked out until they receive a reset link through another channel. Use the no-email option if you plan to communicate manually.
+
 = Does the plugin require JavaScript? =
 
 No. JavaScript enables the batched in-page progress UI, but the main reset flow also works through a non-JavaScript fallback.
 
 == Changelog ==
+
+= 3.1.0 =
+
+- Added a durable audit log table for reset start and completion events.
+- Reduced persisted sensitive data by keeping only summary counts after runs complete.
+- Added clearer warnings around email-mode mail failures and the safer no-email workflow.
+- Improved release hygiene and admin asset cache-busting for updated builds.
 
 = 3.0.0 =
 

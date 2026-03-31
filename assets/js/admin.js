@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const resultsPanel = document.querySelector('#gpr-results-panel');
   const resultsBody = document.querySelector('#gpr-results-body');
   const resultsSummary = document.querySelector('#gpr-results-summary');
+  const resultsTable = document.querySelector('#gpr-results-table');
+  const resultsNote = document.querySelector('#gpr-results-note');
+  const emailWarning = document.querySelector('#gpr-email-warning');
   const pluginModal = document.querySelector('#gpr-plugin-modal');
   const pluginModalTabs = document.querySelectorAll('[data-gpr-tab]');
   const pluginModalPanels = document.querySelectorAll('[data-gpr-panel]');
@@ -44,6 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
     return;
   }
 
+  const skipEmailNotificationsField = form.querySelector('[name="gpr_skip_email_notifications"]');
+
+  if (skipEmailNotificationsField) {
+    skipEmailNotificationsField.addEventListener('change', toggleEmailWarning);
+    toggleEmailWarning();
+  }
+
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
@@ -51,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const role = scopeField.value;
     const excludedUsernames = form.querySelector('[name="gpr_excluded_usernames"]').value;
     const confirmation = form.querySelector('[name="gpr_confirm_reset"]');
-    const skipEmailNotifications = form.querySelector('[name="gpr_skip_email_notifications"]');
+    const skipEmailNotifications = skipEmailNotificationsField;
 
     if (!scopeField.checkValidity()) {
       scopeField.reportValidity();
@@ -68,6 +78,13 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsBody.innerHTML = '';
     resultsSummary.innerHTML = '';
     resultsPanel.hidden = false;
+    if (resultsTable) {
+      resultsTable.hidden = true;
+    }
+    if (resultsNote) {
+      resultsNote.hidden = true;
+      resultsNote.textContent = '';
+    }
 
     try {
       const startResponse = await postAction('gpr_start_job', {
@@ -79,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       currentJobId = startResponse.jobId || null;
       renderResults(startResponse.results || []);
-      renderSummary(startResponse.summary, startResponse.scopeLabel, startResponse.excludedUsernames);
+      renderSummary(startResponse);
 
       if (!startResponse.hasQueuedUsers) {
         setProgress(100, window.gprAdmin.messages.complete, window.gprAdmin.messages.noQueuedUsers);
@@ -105,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       renderResults(response.results || []);
-      renderSummary(response.summary, response.scopeLabel, response.excludedUsernames);
+      renderSummary(response);
       setProgressFromSummary(response.summary);
 
       if (response.completed) {
@@ -149,6 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderResults(results) {
+    if (results.length && resultsTable) {
+      resultsTable.hidden = false;
+    }
+
     results.forEach((result) => {
       const row = document.createElement('tr');
       const statusClass = `gpr-status gpr-status--${result.status}`;
@@ -165,17 +186,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function renderSummary(summary, scopeLabel, excludedUsernames) {
+  function renderSummary(payload) {
+    const summary = payload.summary;
+
+    if (resultsNote) {
+      const shouldShowNote = payload.details_available === false;
+      resultsNote.hidden = !shouldShowNote;
+      resultsNote.textContent = shouldShowNote ? payload.details_notice || '' : '';
+    }
+
     resultsSummary.innerHTML = `
       <div class="gpr-summary-grid">
-        <div><strong>${escapeHtml(window.gprAdmin.messages.scope)}:</strong> ${escapeHtml(scopeLabel || window.gprAdmin.messages.allUsers)}</div>
+        <div><strong>${escapeHtml(window.gprAdmin.messages.scope)}:</strong> ${escapeHtml(payload.scope_label || window.gprAdmin.messages.allUsers)}</div>
         <div><strong>${escapeHtml(window.gprAdmin.messages.matchedUsers)}:</strong> ${summary.total}</div>
         <div><strong>${escapeHtml(window.gprAdmin.messages.processed)}:</strong> ${summary.processed}</div>
         <div><strong>${escapeHtml(window.gprAdmin.messages.success)}:</strong> ${summary.success}</div>
         <div><strong>${escapeHtml(window.gprAdmin.messages.failed)}:</strong> ${summary.failed}</div>
         <div><strong>${escapeHtml(window.gprAdmin.messages.skipped)}:</strong> ${summary.skipped}</div>
       </div>
-      ${excludedUsernames ? `<p><strong>${escapeHtml(window.gprAdmin.messages.excludedUsernames)}:</strong> ${escapeHtml(excludedUsernames)}</p>` : ''}
+      <p><strong>${escapeHtml(window.gprAdmin.messages.notificationMode)}:</strong> ${escapeHtml(payload.notification_label || '')}</p>
+      <p><strong>${escapeHtml(window.gprAdmin.messages.excludedAccounts)}:</strong> ${escapeHtml(payload.excluded_count ?? 0)}</p>
     `;
   }
 
@@ -202,6 +232,14 @@ document.addEventListener('DOMContentLoaded', () => {
     form.querySelectorAll('button, input, select, textarea').forEach((field) => {
       field.disabled = isBusy;
     });
+  }
+
+  function toggleEmailWarning() {
+    if (!emailWarning || !skipEmailNotificationsField) {
+      return;
+    }
+
+    emailWarning.hidden = skipEmailNotificationsField.checked;
   }
 
   function capitalize(value) {

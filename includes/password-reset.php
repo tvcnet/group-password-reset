@@ -337,21 +337,23 @@ function gpr_get_job_storage_key( $job_id ) {
 function gpr_create_reset_job( $role, $excluded_usernames, $owner_user_id, $job_id = null ) {
 	$job_id = $job_id ? $job_id : gpr_generate_job_id();
 	$run    = gpr_prepare_reset_run( $role, $excluded_usernames );
+	$user   = get_userdata( (int) $owner_user_id );
 
 	return array(
-		'job_id'             => $job_id,
-		'owner_user_id'      => (int) $owner_user_id,
-		'role'               => $role,
-		'scope_label'        => gpr_get_scope_label( $role ),
-		'excluded_usernames' => $excluded_usernames,
-		'skip_email'         => false,
-		'total_users'        => $run['total_users'],
-		'queued_total'       => $run['queued_total'],
-		'offset'             => 0,
-		'excluded_ids'       => $run['excluded_ids'],
-		'initial_results'    => $run['skipped_results'],
-		'batch_keys'         => array(),
-		'summary'            => array(
+		'job_id'               => $job_id,
+		'owner_user_id'        => (int) $owner_user_id,
+		'actor_login_snapshot' => $user instanceof WP_User ? $user->user_login : '',
+		'role'                 => $role,
+		'scope_label'          => gpr_get_scope_label( $role ),
+		'excluded_usernames'   => $excluded_usernames,
+		'excluded_count'       => count( $run['skipped_results'] ),
+		'skip_email'           => false,
+		'total_users'          => $run['total_users'],
+		'queued_total'         => $run['queued_total'],
+		'offset'               => 0,
+		'excluded_ids'         => $run['excluded_ids'],
+		'initial_results'      => $run['skipped_results'],
+		'summary'              => array(
 			'success' => 0,
 			'failed'  => 0,
 			'skipped' => count( $run['skipped_results'] ),
@@ -359,8 +361,14 @@ function gpr_create_reset_job( $role, $excluded_usernames, $owner_user_id, $job_
 	);
 }
 
+function gpr_get_persistable_job( $job ) {
+	unset( $job['excluded_usernames'], $job['initial_results'] );
+
+	return $job;
+}
+
 function gpr_store_job( $job ) {
-	set_transient( gpr_get_job_storage_key( $job['job_id'] ), $job, GPR_JOB_TRANSIENT_TTL );
+	set_transient( gpr_get_job_storage_key( $job['job_id'] ), gpr_get_persistable_job( $job ), GPR_JOB_TRANSIENT_TTL );
 }
 
 function gpr_get_job( $job_id ) {
@@ -373,6 +381,32 @@ function gpr_current_user_owns_job( $job ) {
 
 function gpr_get_results_storage_key() {
 	return 'gpr_results_' . get_current_user_id();
+}
+
+function gpr_get_notification_mode_label( $job ) {
+	if ( ! empty( $job['skip_email'] ) ) {
+		return __( 'Password reset only. Email notifications were skipped.', 'group-password-reset' );
+	}
+
+	return __( 'Passwords were reset and secure email notifications were attempted.', 'group-password-reset' );
+}
+
+function gpr_get_results_persistence_notice() {
+	return __( 'Detailed per-user results are available only during the active run for privacy reasons.', 'group-password-reset' );
+}
+
+function gpr_build_results_payload( $job, $mode, $results = array(), $details_available = true ) {
+	return array(
+		'summary'            => gpr_build_summary( $job ),
+		'results'            => $results,
+		'scope_label'        => $job['scope_label'],
+		'excluded_count'     => isset( $job['excluded_count'] ) ? (int) $job['excluded_count'] : 0,
+		'notify_users'       => empty( $job['skip_email'] ),
+		'notification_label' => gpr_get_notification_mode_label( $job ),
+		'mode'               => $mode,
+		'details_available'  => $details_available,
+		'details_notice'     => gpr_get_results_persistence_notice(),
+	);
 }
 
 function gpr_store_flash_results( $payload ) {
@@ -398,33 +432,6 @@ function gpr_build_summary( $job ) {
 		'failed'    => $job['summary']['failed'],
 		'skipped'   => $job['summary']['skipped'],
 	);
-}
-
-function gpr_get_job_batch_storage_key( $job_id, $suffix ) {
-	return 'gpr_job_batch_' . $job_id . '_' . $suffix;
-}
-
-function gpr_store_job_batch_results( $batch_key, $results ) {
-	set_transient( $batch_key, $results, GPR_JOB_TRANSIENT_TTL );
-}
-
-function gpr_get_all_job_results( $job ) {
-	$results = isset( $job['initial_results'] ) ? $job['initial_results'] : array();
-
-	foreach ( $job['batch_keys'] as $batch_key ) {
-		$batch_results = get_transient( $batch_key );
-		if ( is_array( $batch_results ) ) {
-			$results = array_merge( $results, $batch_results );
-		}
-	}
-
-	return $results;
-}
-
-function gpr_delete_job_batch_results( $job ) {
-	foreach ( $job['batch_keys'] as $batch_key ) {
-		delete_transient( $batch_key );
-	}
 }
 
 function gpr_clear_runtime_state() {
@@ -462,23 +469,26 @@ function gpr_clear_runtime_state() {
 	}
 }
 
+function gpr_get_audit_completion_message( $job ) {
+	if ( ! empty( $job['skip_email'] ) ) {
+		return __( 'Reset completed in no-email mode.', 'group-password-reset' );
+	}
+
+	if ( ! empty( $job['summary']['failed'] ) ) {
+		return __( 'Reset completed with one or more failures after email notifications were attempted.', 'group-password-reset' );
+	}
+
+	return __( 'Reset completed after email notifications were attempted.', 'group-password-reset' );
+}
+
 function gpr_finalize_job( $job, $mode ) {
-	$summary = gpr_build_summary( $job );
+	$payload = gpr_build_results_payload( $job, $mode, array(), false );
 
-	gpr_store_flash_results(
-		array(
-			'summary'            => $summary,
-			'results'            => gpr_get_all_job_results( $job ),
-			'scope_label'        => $job['scope_label'],
-			'excluded_usernames' => $job['excluded_usernames'],
-			'mode'               => $mode,
-		)
-	);
-
-	gpr_delete_job_batch_results( $job );
+	gpr_store_flash_results( $payload );
+	gpr_log_job_event( $job, 'job_completed', gpr_get_audit_completion_message( $job ) );
 	delete_transient( gpr_get_job_storage_key( $job['job_id'] ) );
 
-	return $summary;
+	return $payload['summary'];
 }
 
 function gpr_process_job_batch( &$job ) {
@@ -495,12 +505,6 @@ function gpr_process_job_batch( &$job ) {
 		} elseif ( 'failed' === $result['status'] ) {
 			++$job['summary']['failed'];
 		}
-	}
-
-	if ( ! empty( $batch_results ) ) {
-		$batch_key = gpr_get_job_batch_storage_key( $job['job_id'], count( $job['batch_keys'] ) );
-		gpr_store_job_batch_results( $batch_key, $batch_results );
-		$job['batch_keys'][] = $batch_key;
 	}
 
 	$completed = $job['offset'] >= $job['total_users'];
@@ -542,31 +546,20 @@ function gpr_ajax_start_job() {
 
 	$job               = gpr_create_reset_job( $role, $excluded_usernames, get_current_user_id() );
 	$job['skip_email'] = $skip_email;
+	gpr_log_job_event( $job, 'job_started', __( 'Reset job created.', 'group-password-reset' ) );
 
 	if ( $job['queued_total'] > 0 ) {
 		gpr_store_job( $job );
 	} else {
-		gpr_store_flash_results(
-			array(
-				'summary'            => gpr_build_summary( $job ),
-				'results'            => $job['initial_results'],
-				'scope_label'        => $job['scope_label'],
-				'excluded_usernames' => $job['excluded_usernames'],
-				'mode'               => 'async',
-			)
-		);
+		gpr_store_flash_results( gpr_build_results_payload( $job, 'async', array(), false ) );
+		gpr_log_job_event( $job, 'job_completed', gpr_get_audit_completion_message( $job ) );
 	}
 
-	wp_send_json_success(
-		array(
-			'jobId'             => $job['queued_total'] > 0 ? $job['job_id'] : null,
-			'summary'           => gpr_build_summary( $job ),
-			'scopeLabel'        => $job['scope_label'],
-			'hasQueuedUsers'    => $job['queued_total'] > 0,
-			'results'           => $job['initial_results'],
-			'excludedUsernames' => $excluded_usernames,
-		)
-	);
+	$response                   = gpr_build_results_payload( $job, 'async', $job['initial_results'], true );
+	$response['jobId']          = $job['queued_total'] > 0 ? $job['job_id'] : null;
+	$response['hasQueuedUsers'] = $job['queued_total'] > 0;
+
+	wp_send_json_success( $response );
 }
 
 function gpr_ajax_process_job() {
@@ -600,16 +593,11 @@ function gpr_ajax_process_job() {
 		gpr_store_job( $job );
 	}
 
-	wp_send_json_success(
-		array(
-			'jobId'             => $job_id,
-			'results'           => $batch_state['results'],
-			'summary'           => $batch_state['summary'],
-			'scopeLabel'        => $job['scope_label'],
-			'excludedUsernames' => $job['excluded_usernames'],
-			'completed'         => $batch_state['completed'],
-		)
-	);
+	$response              = gpr_build_results_payload( $job, 'async', $batch_state['results'], true );
+	$response['jobId']     = $job_id;
+	$response['completed'] = $batch_state['completed'];
+
+	wp_send_json_success( $response );
 }
 
 add_action( 'wp_ajax_gpr_start_job', 'gpr_ajax_start_job' );
