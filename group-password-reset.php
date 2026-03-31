@@ -17,31 +17,31 @@
  * @package GroupPasswordReset
  */
 
-if (!defined('ABSPATH')) {
-    exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
 }
 
-define('GPR_VERSION', '3.0.0');
-define('GPR_PLUGIN_URI', 'https://hackrepair.com/plugins/group-password-reset');
-define('GPR_AUTHOR_NAME', 'Jim Walker');
-define('GPR_AUTHOR_URI', 'https://hackrepair.com');
-define('GPR_REPO_URL', 'https://github.com/tvcnet/group-password-reset');
-define('GPR_REQUIRES_AT_LEAST', '6.8.3');
-define('GPR_REQUIRES_PHP', '8.3');
-define('GPR_TESTED_UP_TO', '6.9.4');
-define('GPR_PLUGIN_FILE', __FILE__);
-define('GPR_PLUGIN_DIR', plugin_dir_path(__FILE__));
-define('GPR_PLUGIN_URL', plugin_dir_url(__FILE__));
-define('GPR_CHUNK_SIZE', 20);
-define('GPR_RESULTS_TRANSIENT_TTL', 15 * MINUTE_IN_SECONDS);
-define('GPR_JOB_TRANSIENT_TTL', 30 * MINUTE_IN_SECONDS);
+define( 'GPR_VERSION', '3.0.0' );
+define( 'GPR_PLUGIN_URI', 'https://hackrepair.com/plugins/group-password-reset' );
+define( 'GPR_AUTHOR_NAME', 'Jim Walker' );
+define( 'GPR_AUTHOR_URI', 'https://hackrepair.com' );
+define( 'GPR_REPO_URL', 'https://github.com/tvcnet/group-password-reset' );
+define( 'GPR_REQUIRES_AT_LEAST', '6.8.3' );
+define( 'GPR_REQUIRES_PHP', '8.3' );
+define( 'GPR_TESTED_UP_TO', '6.9.4' );
+define( 'GPR_PLUGIN_FILE', __FILE__ );
+define( 'GPR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+define( 'GPR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'GPR_CHUNK_SIZE', 20 );
+define( 'GPR_RESULTS_TRANSIENT_TTL', 15 * MINUTE_IN_SECONDS );
+define( 'GPR_JOB_TRANSIENT_TTL', 30 * MINUTE_IN_SECONDS );
 
 function gpr_get_release_url() {
-    return trailingslashit(GPR_REPO_URL) . 'releases/tag/v' . GPR_VERSION;
+	return trailingslashit( GPR_REPO_URL ) . 'releases/tag/v' . GPR_VERSION;
 }
 
 function gpr_get_download_url() {
-    return trailingslashit(GPR_REPO_URL) . 'releases/download/v' . GPR_VERSION . '/group-password-reset.zip';
+	return trailingslashit( GPR_REPO_URL ) . 'releases/download/v' . GPR_VERSION . '/group-password-reset.zip';
 }
 
 require_once GPR_PLUGIN_DIR . 'includes/password-reset.php';
@@ -49,7 +49,7 @@ require_once GPR_PLUGIN_DIR . 'includes/admin-views.php';
 require_once GPR_PLUGIN_DIR . 'includes/admin-menu.php';
 
 function gpr_load_textdomain() {
-    load_plugin_textdomain('group-password-reset', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+	load_plugin_textdomain( 'group-password-reset', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
 }
 
-add_action('plugins_loaded', 'gpr_load_textdomain');
+add_action( 'plugins_loaded', 'gpr_load_textdomain' );

@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<ruleset name="Group Password Reset">
+	<description>WordPress coding standards for the Group Password Reset plugin.</description>
+
+	<arg name="basepath" value="."/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+	<arg name="extensions" value="php"/>
+
+	<file>group-password-reset.php</file>
+	<file>includes</file>
+
+	<exclude-pattern>*/vendor/*</exclude-pattern>
+
+	<rule ref="WordPress-Extra"/>
+</ruleset>
