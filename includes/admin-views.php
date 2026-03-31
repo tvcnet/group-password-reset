@@ -46,6 +46,9 @@ function gpr_render_plugin_details_modal() {
 							<li><?php esc_html_e( 'Show success, failed, and skipped results clearly', 'group-password-reset' ); ?></li>
 							<li><?php esc_html_e( 'Provide a JavaScript-enhanced flow with a non-JavaScript fallback', 'group-password-reset' ); ?></li>
 						</ul>
+						<p class="gpr-plugin-modal__donate-wrap">
+							<a class="button gpr-plugin-modal__donate-button" href="https://hackrepair.com/donations/buy-jim-a-coffee" target="_blank" rel="noopener"><?php esc_html_e( 'Donate to this plugin »', 'group-password-reset' ); ?></a>
+						</p>
 					</section>
 
 					<section class="gpr-plugin-modal__panel" data-gpr-panel="installation" hidden>
@@ -110,7 +113,6 @@ function gpr_render_plugin_details_modal() {
 					<a class="button button-primary" href="<?php echo esc_url( gpr_get_download_url() ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Download Plugin', 'group-password-reset' ); ?></a>
 					<a class="button" href="<?php echo esc_url( GPR_PLUGIN_URI ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Plugin Homepage', 'group-password-reset' ); ?></a>
 				</div>
-				<a class="button gpr-plugin-modal__donate-button" href="https://hackrepair.com/donations/buy-jim-a-coffee" target="_blank" rel="noopener"><?php esc_html_e( 'Donate to this plugin »', 'group-password-reset' ); ?></a>
 			</div>
 		</div>
 	</div>

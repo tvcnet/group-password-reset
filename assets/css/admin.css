@@ -363,6 +363,11 @@
     border-color: #c65f1b !important;
 }
 
+.gpr-plugin-modal__donate-wrap {
+    margin: 16px 0 0 !important;
+    text-align: left;
+}
+
 .gpr-plugin-modal__donate-button:hover,
 .gpr-plugin-modal__donate-button:focus {
     color: #fff !important;
