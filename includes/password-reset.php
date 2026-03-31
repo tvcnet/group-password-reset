@@ -240,7 +240,11 @@ function gpr_get_job_batch_users( &$job ) {
 	return $batch;
 }
 
-function gpr_reset_single_user( $user ) {
+function gpr_should_skip_email_notifications( $value ) {
+	return ! empty( $value );
+}
+
+function gpr_reset_single_user( $user, $skip_email_notifications = false ) {
 	$user_object = get_user_by( 'id', (int) $user['ID'] );
 
 	if ( ! $user_object ) {
@@ -254,6 +258,16 @@ function gpr_reset_single_user( $user ) {
 	}
 
 	wp_set_password( wp_generate_password( 32, true, true ), $user_object->ID );
+
+	if ( $skip_email_notifications ) {
+		return array(
+			'username' => $user_object->user_login,
+			'email'    => $user_object->user_email,
+			'role'     => gpr_format_user_role_label( $user_object ),
+			'status'   => 'success',
+			'message'  => __( 'Password reset completed without sending an email notification.', 'group-password-reset' ),
+		);
+	}
 
 	$reset_key = get_password_reset_key( $user_object );
 
@@ -324,6 +338,7 @@ function gpr_create_reset_job( $role, $excluded_usernames, $owner_user_id, $job_
 		'role'               => $role,
 		'scope_label'        => gpr_get_scope_label( $role ),
 		'excluded_usernames' => $excluded_usernames,
+		'skip_email'         => false,
 		'total_users'        => $run['total_users'],
 		'queued_total'       => $run['queued_total'],
 		'offset'             => 0,
@@ -463,9 +478,10 @@ function gpr_finalize_job( $job, $mode ) {
 function gpr_process_job_batch( &$job ) {
 	$batch         = gpr_get_job_batch_users( $job );
 	$batch_results = array();
+	$skip_email    = ! empty( $job['skip_email'] );
 
 	foreach ( $batch as $user ) {
-		$result          = gpr_reset_single_user( $user );
+		$result          = gpr_reset_single_user( $user, $skip_email );
 		$batch_results[] = $result;
 
 		if ( 'success' === $result['status'] ) {
@@ -506,10 +522,12 @@ function gpr_ajax_start_job() {
 	}
 
 	$excluded_usernames = gpr_sanitize_excluded_usernames( $raw_excluded_usernames );
+	$skip_email         = isset( $_POST['skip_email_notifications'] ) ? gpr_should_skip_email_notifications( wp_unslash( $_POST['skip_email_notifications'] ) ) : false;
 
 	update_option( 'gpr_excluded_usernames', $excluded_usernames );
 
-	$job = gpr_create_reset_job( $role, $excluded_usernames, get_current_user_id() );
+	$job               = gpr_create_reset_job( $role, $excluded_usernames, get_current_user_id() );
+	$job['skip_email'] = $skip_email;
 
 	if ( $job['queued_total'] > 0 ) {
 		gpr_store_job( $job );

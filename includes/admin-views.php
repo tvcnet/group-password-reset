@@ -182,6 +182,14 @@ function gpr_render_admin_page() {
 					</label>
 				</div>
 
+				<div class="gpr-field gpr-confirmation">
+					<label>
+						<input type="checkbox" name="skip_email_notifications" value="1">
+						<?php esc_html_e( 'Do not email affected users. Reset passwords only.', 'group-password-reset' ); ?>
+					</label>
+					<p class="description"><?php esc_html_e( 'Use this when you want to invalidate passwords first and notify users through another channel.', 'group-password-reset' ); ?></p>
+				</div>
+
 				<div id="gpr-progress-panel" class="gpr-progress" hidden aria-live="polite">
 					<p class="gpr-progress__status"><?php esc_html_e( 'Preparing password reset job…', 'group-password-reset' ); ?></p>
 					<progress class="gpr-progress__bar" value="0" max="100"></progress>
@@ -210,7 +218,7 @@ function gpr_render_admin_page() {
 			<ol class="gpr-steps">
 				<li><?php esc_html_e( 'Select a role or leave the target on All users.', 'group-password-reset' ); ?></li>
 				<li><?php esc_html_e( 'List any usernames that must be excluded from the reset.', 'group-password-reset' ); ?></li>
-				<li><?php esc_html_e( 'Start the reset. Each affected user gets a secure password reset link by email.', 'group-password-reset' ); ?></li>
+				<li><?php esc_html_e( 'Start the reset. Each affected user gets a secure password reset link by email unless you choose the no-email option.', 'group-password-reset' ); ?></li>
 				<li><?php esc_html_e( 'Review the summary and per-user results on this screen.', 'group-password-reset' ); ?></li>
 			</ol>
 		</div>
