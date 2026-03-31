@@ -85,6 +85,12 @@ function gpr_get_scope_label( $role ) {
 	return isset( $roles[ $role ] ) ? $roles[ $role ] : $role;
 }
 
+function gpr_is_valid_scope( $role ) {
+	$roles = gpr_get_available_roles();
+
+	return is_string( $role ) && isset( $roles[ $role ] );
+}
+
 function gpr_get_target_users( $role ) {
 	return get_users( gpr_get_target_user_query_args( $role ) );
 }
@@ -514,8 +520,16 @@ function gpr_ajax_start_job() {
 		wp_send_json_error( __( 'Unauthorized.', 'group-password-reset' ), 403 );
 	}
 
+	if ( empty( $_POST['gpr_confirm_reset'] ) ) {
+		wp_send_json_error( __( 'You must confirm the password reset before continuing.', 'group-password-reset' ), 400 );
+	}
+
 	$role                   = isset( $_POST['role'] ) ? sanitize_key( wp_unslash( $_POST['role'] ) ) : '';
 	$raw_excluded_usernames = '';
+
+	if ( ! gpr_is_valid_scope( $role ) ) {
+		wp_send_json_error( __( 'Please choose a valid reset scope.', 'group-password-reset' ), 400 );
+	}
 
 	if ( isset( $_POST['excluded_usernames'] ) ) {
 		$raw_excluded_usernames = sanitize_text_field( wp_unslash( $_POST['excluded_usernames'] ) );

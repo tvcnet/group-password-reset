@@ -160,13 +160,13 @@ function gpr_render_admin_page() {
 
 				<div class="gpr-field">
 					<label for="gpr-user-role"><?php esc_html_e( 'Choose user role for', 'group-password-reset' ); ?></label>
-					<select id="gpr-user-role" name="gpr_user_role">
-						<option value=""><?php esc_html_e( 'Choose user role for', 'group-password-reset' ); ?></option>
+					<select id="gpr-user-role" name="gpr_user_role" required>
+						<option value="" selected disabled><?php esc_html_e( 'Choose user role for', 'group-password-reset' ); ?></option>
 						<?php foreach ( $roles as $role_key => $role_label ) : ?>
 							<option value="<?php echo esc_attr( $role_key ); ?>"><?php echo esc_html( $role_label ); ?></option>
 						<?php endforeach; ?>
 					</select>
-					<p class="description"><?php esc_html_e( 'Choose a role scope, including all users or administrator resets that exclude the current account.', 'group-password-reset' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Choose All users, a specific role, or an administrator reset that excludes the current account.', 'group-password-reset' ); ?></p>
 				</div>
 
 				<div class="gpr-field">
@@ -213,10 +213,10 @@ function gpr_render_admin_page() {
 			</form>
 		</div>
 
-		<div class="gpr-card">
-			<h2><?php esc_html_e( 'What happens', 'group-password-reset' ); ?></h2>
-			<ol class="gpr-steps">
-				<li><?php esc_html_e( 'Select a role or leave the target on All users.', 'group-password-reset' ); ?></li>
+			<div class="gpr-card">
+				<h2><?php esc_html_e( 'What happens', 'group-password-reset' ); ?></h2>
+				<ol class="gpr-steps">
+					<li><?php esc_html_e( 'Choose All users, a specific role, or Administrator (excluding current user).', 'group-password-reset' ); ?></li>
 				<li><?php esc_html_e( 'List any usernames that must be excluded from the reset.', 'group-password-reset' ); ?></li>
 				<li><?php esc_html_e( 'Start the reset. Each affected user gets a secure password reset link by email unless you choose the no-email option.', 'group-password-reset' ); ?></li>
 				<li><?php esc_html_e( 'Review the summary and per-user results on this screen.', 'group-password-reset' ); ?></li>

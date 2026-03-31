@@ -47,10 +47,16 @@ document.addEventListener('DOMContentLoaded', () => {
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-	    const role = form.querySelector('[name="gpr_user_role"]').value;
-	    const excludedUsernames = form.querySelector('[name="gpr_excluded_usernames"]').value;
-	    const confirmation = form.querySelector('[name="gpr_confirm_reset"]');
-	    const skipEmailNotifications = form.querySelector('[name="gpr_skip_email_notifications"]');
+    const scopeField = form.querySelector('[name="gpr_user_role"]');
+    const role = scopeField.value;
+    const excludedUsernames = form.querySelector('[name="gpr_excluded_usernames"]').value;
+    const confirmation = form.querySelector('[name="gpr_confirm_reset"]');
+    const skipEmailNotifications = form.querySelector('[name="gpr_skip_email_notifications"]');
+
+    if (!scopeField.checkValidity()) {
+      scopeField.reportValidity();
+      return;
+    }
 
     if (!confirmation.checked) {
       confirmation.reportValidity();
@@ -64,11 +70,12 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsPanel.hidden = false;
 
     try {
-	      const startResponse = await postAction('gpr_start_job', {
-	        role,
-	        excluded_usernames: excludedUsernames,
-	        gpr_skip_email_notifications: skipEmailNotifications?.checked ? '1' : '',
-	      });
+      const startResponse = await postAction('gpr_start_job', {
+        role,
+        excluded_usernames: excludedUsernames,
+        gpr_confirm_reset: confirmation.checked ? '1' : '',
+        gpr_skip_email_notifications: skipEmailNotifications?.checked ? '1' : '',
+      });
 
       currentJobId = startResponse.jobId || null;
       renderResults(startResponse.results || []);
