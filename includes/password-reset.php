@@ -22,10 +22,9 @@ function gpr_sanitize_excluded_usernames( $excluded_usernames ) {
 }
 
 function gpr_get_excluded_usernames_list( $excluded_usernames = null ) {
-	$raw_value   = is_string( $excluded_usernames ) ? $excluded_usernames : (string) get_option( 'gpr_excluded_usernames', '' );
-	$sanitized   = gpr_sanitize_excluded_usernames( $raw_value );
-	$usernames   = '' === $sanitized ? array() : array_map( 'trim', explode( ',', $sanitized ) );
-	$usernames[] = 'hackguard';
+	$raw_value = is_string( $excluded_usernames ) ? $excluded_usernames : (string) get_option( 'gpr_excluded_usernames', '' );
+	$sanitized = gpr_sanitize_excluded_usernames( $raw_value );
+	$usernames = '' === $sanitized ? array() : array_map( 'trim', explode( ',', $sanitized ) );
 
 	return array_values( array_unique( array_filter( $usernames ) ) );
 }
