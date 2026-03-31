@@ -163,7 +163,7 @@
 .gpr-plugin-modal__banner {
     position: relative;
     min-height: 250px;
-    background: linear-gradient(90deg, #e87022 0 40%, #eef2f5 40% 100%);
+    background: linear-gradient(90deg, rgb(235, 113, 46) 0 40%, #eef2f5 40% 100%);
 }
 
 .gpr-plugin-modal__banner img {
@@ -359,8 +359,8 @@
 
 .gpr-plugin-modal__donate-button {
     color: #fff !important;
-    background: #e87022 !important;
-    border-color: #c65f1b !important;
+    background: rgb(235, 113, 46) !important;
+    border-color: rgb(235, 113, 46) !important;
 }
 
 .gpr-plugin-modal__donate-wrap {
@@ -371,8 +371,8 @@
 .gpr-plugin-modal__donate-button:hover,
 .gpr-plugin-modal__donate-button:focus {
     color: #fff !important;
-    background: #cc621b !important;
-    border-color: #a94f16 !important;
+    background: rgb(235, 113, 46) !important;
+    border-color: rgb(235, 113, 46) !important;
 }
 
 body.gpr-modal-open {
