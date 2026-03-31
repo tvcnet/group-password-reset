@@ -39,6 +39,10 @@ With JavaScript enabled, the plugin processes users in batches of 20 and updates
 
 See [MAINTAINING.md](MAINTAINING.md) for the repository QA checklist, WordPressCS commands, release packaging rules, and local test environment notes.
 
+## Support
+
+- Reddit support/discussion thread: [Group Password Reset support post](https://www.reddit.com/user/hackrepair/comments/1s8a24b/new_plugin_group_password_reset_bulk_password/)
+
 ## Testing Notes
 
 Baseline compatibility target:

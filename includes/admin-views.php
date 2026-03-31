@@ -104,6 +104,7 @@ function gpr_render_plugin_details_modal() {
 						<li><strong><?php esc_html_e( 'Active Installations:', 'group-password-reset' ); ?></strong> <?php echo esc_html( GPR_INSTALLATION_LABEL ); ?></li>
 						<li><a href="<?php echo esc_url( GPR_REPO_URL ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'GitHub Plugin Page »', 'group-password-reset' ); ?></a></li>
 						<li><a href="<?php echo esc_url( GPR_PLUGIN_URI ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Plugin Homepage »', 'group-password-reset' ); ?></a></li>
+						<li><a href="https://www.reddit.com/user/hackrepair/comments/1s8a24b/new_plugin_group_password_reset_bulk_password/" target="_blank" rel="noopener"><?php esc_html_e( 'Support Forum »', 'group-password-reset' ); ?></a></li>
 					</ul>
 				</aside>
 			</div>

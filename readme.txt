@@ -42,6 +42,12 @@ Compatibility baseline:
 4. Choose `All users`, a specific role, or `Administrator (excluding current user)`.
 5. Enter any excluded usernames, confirm the reset, and start the run.
 
+== Support ==
+
+For support, feedback, or discussion, visit:
+
+https://www.reddit.com/user/hackrepair/comments/1s8a24b/new_plugin_group_password_reset_bulk_password/
+
 == Frequently Asked Questions ==
 
 = Can I reset passwords for only one role? =
