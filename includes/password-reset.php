@@ -247,8 +247,16 @@ function gpr_reset_single_user( $user ) {
 	);
 }
 
-function gpr_get_job_storage_key() {
-	return 'gpr_job_' . get_current_user_id();
+function gpr_generate_job_id() {
+	return wp_generate_uuid4();
+}
+
+function gpr_is_valid_job_id( $job_id ) {
+	return is_string( $job_id ) && 1 === preg_match( '/^[a-f0-9-]{36}$/i', $job_id );
+}
+
+function gpr_get_job_storage_key( $job_id ) {
+	return 'gpr_job_' . $job_id;
 }
 
 function gpr_get_results_storage_key() {
@@ -280,8 +288,8 @@ function gpr_build_summary( $job ) {
 	);
 }
 
-function gpr_get_job_batch_storage_key( $suffix ) {
-	return 'gpr_job_batch_' . get_current_user_id() . '_' . $suffix;
+function gpr_get_job_batch_storage_key( $job_id, $suffix ) {
+	return 'gpr_job_batch_' . $job_id . '_' . $suffix;
 }
 
 function gpr_store_job_batch_results( $batch_key, $results ) {
@@ -316,11 +324,15 @@ function gpr_ajax_start_job() {
 
 	$role               = isset( $_POST['role'] ) ? sanitize_key( wp_unslash( $_POST['role'] ) ) : '';
 	$excluded_usernames = isset( $_POST['excluded_usernames'] ) ? gpr_sanitize_excluded_usernames( wp_unslash( $_POST['excluded_usernames'] ) ) : '';
+	$job_id             = gpr_generate_job_id();
+	$owner_user_id      = get_current_user_id();
 
 	update_option( 'gpr_excluded_usernames', $excluded_usernames );
 
 	$run = gpr_prepare_reset_run( $role, $excluded_usernames );
 	$job = array(
+		'job_id'             => $job_id,
+		'owner_user_id'      => $owner_user_id,
 		'role'               => $role,
 		'scope_label'        => gpr_get_scope_label( $role ),
 		'excluded_usernames' => $excluded_usernames,
@@ -337,10 +349,23 @@ function gpr_ajax_start_job() {
 		),
 	);
 
-	set_transient( gpr_get_job_storage_key(), $job, GPR_JOB_TRANSIENT_TTL );
+	if ( $job['queued_total'] > 0 ) {
+		set_transient( gpr_get_job_storage_key( $job_id ), $job, GPR_JOB_TRANSIENT_TTL );
+	} else {
+		gpr_store_flash_results(
+			array(
+				'summary'            => gpr_build_summary( $job ),
+				'results'            => $job['initial_results'],
+				'scope_label'        => $job['scope_label'],
+				'excluded_usernames' => $job['excluded_usernames'],
+				'mode'               => 'async',
+			)
+		);
+	}
 
 	wp_send_json_success(
 		array(
+			'jobId'             => $job['queued_total'] > 0 ? $job_id : null,
 			'summary'           => gpr_build_summary( $job ),
 			'scopeLabel'        => $job['scope_label'],
 			'hasQueuedUsers'    => $job['queued_total'] > 0,
@@ -357,10 +382,20 @@ function gpr_ajax_process_job() {
 		wp_send_json_error( __( 'Unauthorized.', 'group-password-reset' ), 403 );
 	}
 
-	$job = get_transient( gpr_get_job_storage_key() );
+	$job_id = isset( $_POST['job_id'] ) ? sanitize_text_field( wp_unslash( $_POST['job_id'] ) ) : '';
+
+	if ( ! gpr_is_valid_job_id( $job_id ) ) {
+		wp_send_json_error( __( 'Invalid reset job ID.', 'group-password-reset' ), 400 );
+	}
+
+	$job = get_transient( gpr_get_job_storage_key( $job_id ) );
 
 	if ( ! is_array( $job ) ) {
 		wp_send_json_error( __( 'No reset job is currently active.', 'group-password-reset' ), 400 );
+	}
+
+	if ( ! isset( $job['owner_user_id'] ) || get_current_user_id() !== (int) $job['owner_user_id'] ) {
+		wp_send_json_error( __( 'You do not have permission to continue this reset job.', 'group-password-reset' ), 403 );
 	}
 
 	$batch         = gpr_get_job_batch_users( $job );
@@ -378,7 +413,7 @@ function gpr_ajax_process_job() {
 	}
 
 	if ( ! empty( $batch_results ) ) {
-		$batch_key = gpr_get_job_batch_storage_key( count( $job['batch_keys'] ) );
+		$batch_key = gpr_get_job_batch_storage_key( $job_id, count( $job['batch_keys'] ) );
 		gpr_store_job_batch_results( $batch_key, $batch_results );
 		$job['batch_keys'][] = $batch_key;
 	}
@@ -397,13 +432,14 @@ function gpr_ajax_process_job() {
 			)
 		);
 		gpr_delete_job_batch_results( $job );
-		delete_transient( gpr_get_job_storage_key() );
+		delete_transient( gpr_get_job_storage_key( $job_id ) );
 	} else {
-		set_transient( gpr_get_job_storage_key(), $job, GPR_JOB_TRANSIENT_TTL );
+		set_transient( gpr_get_job_storage_key( $job_id ), $job, GPR_JOB_TRANSIENT_TTL );
 	}
 
 	wp_send_json_success(
 		array(
+			'jobId'             => $job_id,
 			'results'           => $batch_results,
 			'summary'           => $summary,
 			'scopeLabel'        => $job['scope_label'],

@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const pluginModalPanels = document.querySelectorAll('[data-gpr-panel]');
   const pluginModalOpeners = document.querySelectorAll('[data-gpr-view-details]');
   const pluginModalClosers = document.querySelectorAll('[data-gpr-modal-close]');
+  let currentJobId = null;
 
   if (pluginModal) {
     pluginModalOpeners.forEach((link) => {
@@ -67,6 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         excluded_usernames: excludedUsernames,
       });
 
+      currentJobId = startResponse.jobId || null;
       renderResults(startResponse.results || []);
       renderSummary(startResponse.summary, startResponse.scopeLabel, startResponse.excludedUsernames);
 
@@ -84,14 +86,21 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   async function processJob() {
+    if (!currentJobId) {
+      throw new Error(window.gprAdmin.messages.requestFailed);
+    }
+
     try {
-      const response = await postAction('gpr_process_job', {});
+      const response = await postAction('gpr_process_job', {
+        job_id: currentJobId,
+      });
 
       renderResults(response.results || []);
       renderSummary(response.summary, response.scopeLabel, response.excludedUsernames);
       setProgressFromSummary(response.summary);
 
       if (response.completed) {
+        currentJobId = null;
         setProgress(100, window.gprAdmin.messages.complete, buildProgressMeta(response.summary));
         toggleBusyState(false);
         return;
@@ -99,6 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       window.setTimeout(processJob, 250);
     } catch (error) {
+      currentJobId = null;
       setProgress(progressBar.value || 0, window.gprAdmin.messages.processError, error.message);
       toggleBusyState(false);
     }
