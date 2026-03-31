@@ -3,13 +3,13 @@
 Contributors: hackrepairguy
 Tags: password reset, bulk actions, user management, security
 Requires at least: 6.8.3
-Tested up to: 6.9.4
+Tested up to: 6.9
 Stable tag: 3.0.0
 Requires PHP: 8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Bulk reset WordPress user passwords by role or across the full site, skip excluded usernames, and notify affected users with secure password reset links.
+Bulk reset WordPress passwords by role or sitewide, skip excluded usernames, and send secure reset links to affected users.
 
 == Description ==
 
@@ -30,7 +30,7 @@ The plugin supports two execution paths:
 
 Compatibility baseline:
 
-- WordPress 6.9.4
+- WordPress 6.9
 - PHP 8.3
 
 == Installation ==

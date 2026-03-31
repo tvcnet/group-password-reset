@@ -408,8 +408,14 @@ function gpr_ajax_start_job() {
 		wp_send_json_error( __( 'Unauthorized.', 'group-password-reset' ), 403 );
 	}
 
-	$role               = isset( $_POST['role'] ) ? sanitize_key( wp_unslash( $_POST['role'] ) ) : '';
-	$excluded_usernames = isset( $_POST['excluded_usernames'] ) ? gpr_sanitize_excluded_usernames( wp_unslash( $_POST['excluded_usernames'] ) ) : '';
+	$role                   = isset( $_POST['role'] ) ? sanitize_key( wp_unslash( $_POST['role'] ) ) : '';
+	$raw_excluded_usernames = '';
+
+	if ( isset( $_POST['excluded_usernames'] ) ) {
+		$raw_excluded_usernames = sanitize_text_field( wp_unslash( $_POST['excluded_usernames'] ) );
+	}
+
+	$excluded_usernames = gpr_sanitize_excluded_usernames( $raw_excluded_usernames );
 
 	update_option( 'gpr_excluded_usernames', $excluded_usernames );
 

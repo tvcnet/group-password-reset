@@ -159,8 +159,14 @@ function gpr_handle_reset_request() {
 		wp_die( esc_html__( 'You must confirm the password reset before continuing.', 'group-password-reset' ) );
 	}
 
-	$role               = isset( $_POST['gpr_user_role'] ) ? sanitize_key( wp_unslash( $_POST['gpr_user_role'] ) ) : '';
-	$excluded_usernames = isset( $_POST['gpr_excluded_usernames'] ) ? gpr_sanitize_excluded_usernames( wp_unslash( $_POST['gpr_excluded_usernames'] ) ) : '';
+	$role                   = isset( $_POST['gpr_user_role'] ) ? sanitize_key( wp_unslash( $_POST['gpr_user_role'] ) ) : '';
+	$raw_excluded_usernames = '';
+
+	if ( isset( $_POST['gpr_excluded_usernames'] ) ) {
+		$raw_excluded_usernames = sanitize_text_field( wp_unslash( $_POST['gpr_excluded_usernames'] ) );
+	}
+
+	$excluded_usernames = gpr_sanitize_excluded_usernames( $raw_excluded_usernames );
 
 	update_option( 'gpr_excluded_usernames', $excluded_usernames );
 

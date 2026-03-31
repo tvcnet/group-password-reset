@@ -6,7 +6,7 @@
  * Version: 3.0.0
  * Requires at least: 6.8.3
  * Requires PHP: 8.3
- * Tested up to: 6.9.4
+ * Tested up to: 6.9
  * Author: Jim Walker
  * Author URI: https://hackrepair.com
  * License: GPL-2.0+
@@ -29,7 +29,7 @@ define( 'GPR_AUTHOR_URI', 'https://hackrepair.com' );
 define( 'GPR_REPO_URL', 'https://github.com/tvcnet/group-password-reset' );
 define( 'GPR_REQUIRES_AT_LEAST', '6.8.3' );
 define( 'GPR_REQUIRES_PHP', '8.3' );
-define( 'GPR_TESTED_UP_TO', '6.9.4' );
+define( 'GPR_TESTED_UP_TO', '6.9' );
 define( 'GPR_RELEASE_DATE', 'March 30, 2026' );
 define( 'GPR_INSTALLATION_LABEL', 'Direct GitHub release' );
 define( 'GPR_PLUGIN_FILE', __FILE__ );
@@ -50,9 +50,3 @@ function gpr_get_download_url() {
 require_once GPR_PLUGIN_DIR . 'includes/password-reset.php';
 require_once GPR_PLUGIN_DIR . 'includes/admin-views.php';
 require_once GPR_PLUGIN_DIR . 'includes/admin-menu.php';
-
-function gpr_load_textdomain() {
-	load_plugin_textdomain( 'group-password-reset', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-}
-
-add_action( 'plugins_loaded', 'gpr_load_textdomain' );

@@ -43,7 +43,7 @@ See [MAINTAINING.md](MAINTAINING.md) for the repository QA checklist, WordPressC
 
 Baseline compatibility target:
 
-- WordPress 6.9.4
+- WordPress 6.9
 - PHP 8.3
 
 Recommended manual scenarios:
@@ -59,4 +59,4 @@ Recommended manual scenarios:
 - Update the plugin version and changelog.
 - Verify `readme.txt` matches the plugin header and current behavior.
 - Confirm the admin screen loads without PHP notices.
-- Confirm the reset flow works on WordPress 6.9.4 with PHP 8.3, plus any newer local prerelease builds used for forward-compatibility checks.
+- Confirm the reset flow works on WordPress 6.9 with PHP 8.3, plus any newer local prerelease builds used for forward-compatibility checks.
