@@ -22,20 +22,18 @@ function gpr_register_settings() {
 }
 
 function gpr_add_admin_menu() {
-	add_menu_page(
+	add_management_page(
 		__( 'Group Password Reset', 'group-password-reset' ),
 		__( 'Group Password Reset', 'group-password-reset' ),
 		'manage_options',
 		'group-password-reset',
-		'gpr_render_admin_page',
-		'dashicons-admin-users',
-		60
+		'gpr_render_admin_page'
 	);
 }
 
 function gpr_enqueue_admin_assets( $hook_suffix ) {
 	$supported_screens = array(
-		'toplevel_page_group-password-reset',
+		'tools_page_group-password-reset',
 		'plugins.php',
 	);
 
@@ -94,7 +92,7 @@ function gpr_add_plugin_action_links( $actions, $plugin_file ) {
 	$settings_link = sprintf(
 		'<a href="%s">%s</a>',
 		esc_url( gpr_get_admin_page_url() ),
-		esc_html__( 'Settings', 'group-password-reset' )
+		esc_html__( 'Tools', 'group-password-reset' )
 	);
 
 	array_unshift( $actions, $settings_link );
@@ -200,7 +198,7 @@ function gpr_handle_reset_request() {
 }
 
 function gpr_get_admin_page_url() {
-	return admin_url( 'admin.php?page=group-password-reset' );
+	return admin_url( 'tools.php?page=group-password-reset' );
 }
 
 function gpr_get_continue_reset_nonce_action( $job_id ) {
