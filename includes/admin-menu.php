@@ -45,14 +45,14 @@ function gpr_enqueue_admin_assets( $hook_suffix ) {
 		'gpr-admin-styles',
 		GPR_PLUGIN_URL . 'assets/css/admin.css',
 		array(),
-		GPR_VERSION
+		gpr_get_asset_version( 'assets/css/admin.css' )
 	);
 
 	wp_enqueue_script(
 		'gpr-admin-script',
 		GPR_PLUGIN_URL . 'assets/js/admin.js',
 		array(),
-		GPR_VERSION,
+		gpr_get_asset_version( 'assets/js/admin.js' ),
 		true
 	);
 

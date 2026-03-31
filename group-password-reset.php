@@ -38,6 +38,20 @@ define( 'GPR_CHUNK_SIZE', 20 );
 define( 'GPR_RESULTS_TRANSIENT_TTL', 15 * MINUTE_IN_SECONDS );
 define( 'GPR_JOB_TRANSIENT_TTL', 30 * MINUTE_IN_SECONDS );
 
+function gpr_get_asset_version( $relative_path ) {
+	$file_path = GPR_PLUGIN_DIR . ltrim( $relative_path, '/\\' );
+
+	if ( file_exists( $file_path ) ) {
+		$modified_time = filemtime( $file_path );
+
+		if ( false !== $modified_time ) {
+			return GPR_VERSION . '.' . $modified_time;
+		}
+	}
+
+	return GPR_VERSION;
+}
+
 function gpr_get_release_url() {
 	return trailingslashit( GPR_REPO_URL ) . 'releases/tag/v' . GPR_VERSION;
 }
