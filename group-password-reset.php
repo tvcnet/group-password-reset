@@ -22,6 +22,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'GPR_VERSION', '3.0.0' );
+define( 'GPR_PLUGIN_NAME', "The Hack Repair Guy's Group Password Reset" );
 define( 'GPR_PLUGIN_URI', 'https://hackrepair.com/plugins/group-password-reset' );
 define( 'GPR_AUTHOR_NAME', 'Jim Walker' );
 define( 'GPR_AUTHOR_URI', 'https://hackrepair.com' );
@@ -29,6 +30,8 @@ define( 'GPR_REPO_URL', 'https://github.com/tvcnet/group-password-reset' );
 define( 'GPR_REQUIRES_AT_LEAST', '6.8.3' );
 define( 'GPR_REQUIRES_PHP', '8.3' );
 define( 'GPR_TESTED_UP_TO', '6.9.4' );
+define( 'GPR_RELEASE_DATE', 'March 30, 2026' );
+define( 'GPR_INSTALLATION_LABEL', 'Direct GitHub release' );
 define( 'GPR_PLUGIN_FILE', __FILE__ );
 define( 'GPR_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'GPR_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

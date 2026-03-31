@@ -24,7 +24,7 @@ function gpr_render_plugin_details_modal() {
 			<div class="gpr-plugin-modal__banner">
 				<img src="<?php echo esc_url( GPR_PLUGIN_URL . 'assets/images/plugin-banner.png' ); ?>" alt="<?php esc_attr_e( 'Group Password Reset banner', 'group-password-reset' ); ?>">
 				<div class="gpr-plugin-modal__banner-copy">
-					<h2 id="gpr-plugin-modal-title"><?php esc_html_e( "The Hack Repair Guy's Group Password Reset", 'group-password-reset' ); ?></h2>
+					<h2 id="gpr-plugin-modal-title"><?php echo esc_html( GPR_PLUGIN_NAME ); ?></h2>
 				</div>
 			</div>
 
@@ -84,7 +84,7 @@ function gpr_render_plugin_details_modal() {
 					<ul class="gpr-plugin-modal__meta">
 						<li><strong><?php esc_html_e( 'Version:', 'group-password-reset' ); ?></strong> <?php echo esc_html( GPR_VERSION ); ?></li>
 						<li><strong><?php esc_html_e( 'Author:', 'group-password-reset' ); ?></strong> <a href="<?php echo esc_url( GPR_AUTHOR_URI ); ?>" target="_blank" rel="noopener"><?php echo esc_html( GPR_AUTHOR_NAME ); ?></a></li>
-						<li><strong><?php esc_html_e( 'Last Updated:', 'group-password-reset' ); ?></strong> <?php esc_html_e( 'March 30, 2026', 'group-password-reset' ); ?></li>
+						<li><strong><?php esc_html_e( 'Last Updated:', 'group-password-reset' ); ?></strong> <?php echo esc_html( GPR_RELEASE_DATE ); ?></li>
 						<li><strong><?php esc_html_e( 'Requires WordPress Version:', 'group-password-reset' ); ?></strong> 
 						<?php
 						echo esc_html(
@@ -97,7 +97,7 @@ function gpr_render_plugin_details_modal() {
 						?>
 						</li>
 						<li><strong><?php esc_html_e( 'Compatible up to:', 'group-password-reset' ); ?></strong> <?php echo esc_html( GPR_TESTED_UP_TO ); ?></li>
-						<li><strong><?php esc_html_e( 'Active Installations:', 'group-password-reset' ); ?></strong> <?php esc_html_e( 'Direct distribution', 'group-password-reset' ); ?></li>
+						<li><strong><?php esc_html_e( 'Active Installations:', 'group-password-reset' ); ?></strong> <?php echo esc_html( GPR_INSTALLATION_LABEL ); ?></li>
 						<li><a href="<?php echo esc_url( GPR_REPO_URL ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'GitHub Plugin Page »', 'group-password-reset' ); ?></a></li>
 						<li><a href="<?php echo esc_url( GPR_PLUGIN_URI ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Plugin Homepage »', 'group-password-reset' ); ?></a></li>
 					</ul>

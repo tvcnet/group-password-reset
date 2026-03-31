@@ -62,30 +62,10 @@ function gpr_enqueue_admin_assets( $hook_suffix ) {
 		'gpr-admin-script',
 		'gprAdmin',
 		array(
-			'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-			'nonce'        => wp_create_nonce( 'gpr_job_nonce' ),
-			'chunkSize'    => GPR_CHUNK_SIZE,
-			'detailsModal' => array(
-				'pluginName'     => __( "The Hack Repair Guy's Group Password Reset", 'group-password-reset' ),
-				'versionLabel'   => GPR_VERSION,
-				'requiresWp'     => GPR_REQUIRES_AT_LEAST,
-				'requiresPhp'    => GPR_REQUIRES_PHP,
-				'testedUpTo'     => GPR_TESTED_UP_TO,
-				'authorName'     => GPR_AUTHOR_NAME,
-				'authorUrl'      => GPR_AUTHOR_URI,
-				'pluginUrl'      => GPR_PLUGIN_URI,
-				'releaseUrl'     => gpr_get_release_url(),
-				'downloadUrl'    => gpr_get_download_url(),
-				'repoUrl'        => GPR_REPO_URL,
-				'bannerUrl'      => GPR_PLUGIN_URL . 'assets/images/plugin-banner.png',
-				'activeInstalls' => __( 'Direct GitHub release', 'group-password-reset' ),
-				'lastUpdated'    => sprintf(
-					/* translators: %s: plugin version */
-					__( 'Version %s release', 'group-password-reset' ),
-					GPR_VERSION
-				),
-			),
-			'messages'     => array(
+			'ajaxUrl'   => admin_url( 'admin-ajax.php' ),
+			'nonce'     => wp_create_nonce( 'gpr_job_nonce' ),
+			'chunkSize' => GPR_CHUNK_SIZE,
+			'messages'  => array(
 				'startError'        => __( 'Unable to start the password reset job.', 'group-password-reset' ),
 				'processError'      => __( 'Unable to continue the password reset job.', 'group-password-reset' ),
 				'complete'          => __( 'Password reset complete.', 'group-password-reset' ),
