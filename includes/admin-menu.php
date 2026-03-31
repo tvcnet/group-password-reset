@@ -165,7 +165,7 @@ function gpr_handle_reset_request() {
 	}
 
 	$excluded_usernames = gpr_sanitize_excluded_usernames( $raw_excluded_usernames );
-	$skip_email         = isset( $_POST['skip_email_notifications'] ) ? gpr_should_skip_email_notifications( wp_unslash( $_POST['skip_email_notifications'] ) ) : false;
+	$skip_email         = isset( $_POST['gpr_skip_email_notifications'] ) ? gpr_should_skip_email_notifications( wp_unslash( $_POST['gpr_skip_email_notifications'] ) ) : false;
 
 	update_option( 'gpr_excluded_usernames', $excluded_usernames );
 

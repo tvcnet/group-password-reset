@@ -184,7 +184,7 @@ function gpr_render_admin_page() {
 
 				<div class="gpr-field gpr-confirmation">
 					<label>
-						<input type="checkbox" name="skip_email_notifications" value="1">
+						<input type="checkbox" name="gpr_skip_email_notifications" value="1">
 						<?php esc_html_e( 'Do not email affected users. Reset passwords only.', 'group-password-reset' ); ?>
 					</label>
 					<p class="description"><?php esc_html_e( 'Use this when you want to invalidate passwords first and notify users through another channel.', 'group-password-reset' ); ?></p>
