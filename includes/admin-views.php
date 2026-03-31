@@ -146,20 +146,20 @@ function gpr_render_admin_page() {
 		<?php endif; ?>
 
 		<div class="gpr-card">
-			<h2><?php esc_html_e( 'Reset Settings', 'group-password-reset' ); ?></h2>
+			<h2><?php esc_html_e( 'Choose user role for', 'group-password-reset' ); ?></h2>
 			<form id="gpr-reset-form" class="gpr-form" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
 				<?php wp_nonce_field( 'gpr_reset_passwords' ); ?>
 				<input type="hidden" name="action" value="gpr_reset_passwords">
 
 				<div class="gpr-field">
-					<label for="gpr-user-role"><?php esc_html_e( 'Target user role', 'group-password-reset' ); ?></label>
+					<label for="gpr-user-role"><?php esc_html_e( 'Choose user role for', 'group-password-reset' ); ?></label>
 					<select id="gpr-user-role" name="gpr_user_role">
-						<option value=""><?php esc_html_e( 'All users', 'group-password-reset' ); ?></option>
+						<option value=""><?php esc_html_e( 'Choose user role for', 'group-password-reset' ); ?></option>
 						<?php foreach ( $roles as $role_key => $role_label ) : ?>
 							<option value="<?php echo esc_attr( $role_key ); ?>"><?php echo esc_html( $role_label ); ?></option>
 						<?php endforeach; ?>
 					</select>
-					<p class="description"><?php esc_html_e( 'Choose a single role, or leave this on All users to process every account except exclusions.', 'group-password-reset' ); ?></p>
+					<p class="description"><?php esc_html_e( 'Choose a role scope, including all users or administrator resets that exclude the current account.', 'group-password-reset' ); ?></p>
 				</div>
 
 				<div class="gpr-field">

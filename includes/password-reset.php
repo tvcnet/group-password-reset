@@ -9,6 +9,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+function gpr_get_all_users_scope_key() {
+	return 'all_users';
+}
+
+function gpr_get_admin_excluding_current_scope_key() {
+	return 'administrator_excluding_current_user';
+}
+
+function gpr_normalize_scope_role( $role ) {
+	if ( gpr_get_all_users_scope_key() === $role ) {
+		return '';
+	}
+
+	if ( gpr_get_admin_excluding_current_scope_key() === $role ) {
+		return 'administrator';
+	}
+
+	return $role;
+}
+
 function gpr_sanitize_excluded_usernames( $excluded_usernames ) {
 	if ( ! is_string( $excluded_usernames ) ) {
 		return '';
@@ -32,6 +52,7 @@ function gpr_get_excluded_usernames_list( $excluded_usernames = null ) {
 function gpr_get_available_roles() {
 	$editable_roles = get_editable_roles();
 	$role_labels    = array();
+	$scopes         = array();
 
 	foreach ( $editable_roles as $role_key => $role_config ) {
 		$role_labels[ $role_key ] = translate_user_role( $role_config['name'] );
@@ -39,11 +60,23 @@ function gpr_get_available_roles() {
 
 	asort( $role_labels );
 
-	return $role_labels;
+	$scopes[ gpr_get_all_users_scope_key() ] = __( 'All users', 'group-password-reset' );
+
+	foreach ( $role_labels as $role_key => $role_label ) {
+		if ( 'administrator' === $role_key ) {
+			$scopes[ gpr_get_admin_excluding_current_scope_key() ] = __( 'Administrator (excluding current user)', 'group-password-reset' );
+		}
+
+		$scopes[ $role_key ] = $role_label;
+	}
+
+	return $scopes;
 }
 
 function gpr_get_scope_label( $role ) {
-	if ( '' === $role ) {
+	$normalized_role = gpr_normalize_scope_role( $role );
+
+	if ( '' === $normalized_role ) {
 		return __( 'All users', 'group-password-reset' );
 	}
 
@@ -71,8 +104,10 @@ function gpr_get_target_user_query_args( $role, $number = 0, $offset = 0, $count
 		$args['count_total'] = true;
 	}
 
-	if ( '' !== $role ) {
-		$args['role'] = $role;
+	$normalized_role = gpr_normalize_scope_role( $role );
+
+	if ( '' !== $normalized_role ) {
+		$args['role'] = $normalized_role;
 	}
 
 	return $args;
@@ -118,6 +153,7 @@ function gpr_prepare_reset_run( $role, $excluded_usernames ) {
 function gpr_get_excluded_run_data( $role, $excluded_usernames ) {
 	$excluded_ids    = array();
 	$skipped_results = array();
+	$normalized_role = gpr_normalize_scope_role( $role );
 
 	foreach ( gpr_get_excluded_usernames_list( $excluded_usernames ) as $username ) {
 		$user = get_user_by( 'login', $username );
@@ -126,7 +162,7 @@ function gpr_get_excluded_run_data( $role, $excluded_usernames ) {
 			continue;
 		}
 
-		if ( '' !== $role && ! in_array( $role, (array) $user->roles, true ) ) {
+		if ( '' !== $normalized_role && ! in_array( $normalized_role, (array) $user->roles, true ) ) {
 			continue;
 		}
 
@@ -138,6 +174,25 @@ function gpr_get_excluded_run_data( $role, $excluded_usernames ) {
 			'status'   => 'skipped',
 			'message'  => __( 'Excluded from this reset run.', 'group-password-reset' ),
 		);
+	}
+
+	if ( gpr_get_admin_excluding_current_scope_key() === $role ) {
+		$current_user = wp_get_current_user();
+
+		if ( $current_user instanceof WP_User && in_array( 'administrator', (array) $current_user->roles, true ) ) {
+			$current_user_id = (int) $current_user->ID;
+
+			if ( ! in_array( $current_user_id, $excluded_ids, true ) ) {
+				$excluded_ids[]    = $current_user_id;
+				$skipped_results[] = array(
+					'username' => $current_user->user_login,
+					'email'    => $current_user->user_email,
+					'role'     => gpr_format_user_role_label( $current_user ),
+					'status'   => 'skipped',
+					'message'  => __( 'Current administrator account excluded from this reset run.', 'group-password-reset' ),
+				);
+			}
+		}
 	}
 
 	return array(
