@@ -35,6 +35,10 @@ With JavaScript enabled, the plugin processes users in batches of 20 and updates
 - `assets/js/admin.js` progressively enhances the admin screen with async batching.
 - `assets/css/admin.css` keeps the UI aligned with a native WordPress admin layout.
 
+## Maintainer Notes
+
+See [MAINTAINING.md](MAINTAINING.md) for the repository QA checklist, WordPressCS commands, release packaging rules, and local test environment notes.
+
 ## Testing Notes
 
 Baseline compatibility target:
