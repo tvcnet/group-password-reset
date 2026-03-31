@@ -406,6 +406,41 @@ function gpr_delete_job_batch_results( $job ) {
 	}
 }
 
+function gpr_clear_runtime_state() {
+	global $wpdb;
+
+	if ( ! $wpdb instanceof wpdb ) {
+		return;
+	}
+
+	$patterns = array(
+		'_transient_gpr_job_%',
+		'_transient_timeout_gpr_job_%',
+		'_transient_gpr_job_batch_%',
+		'_transient_timeout_gpr_job_batch_%',
+		'_transient_gpr_results_%',
+		'_transient_timeout_gpr_results_%',
+	);
+
+	foreach ( $patterns as $pattern ) {
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery,WordPress.DB.DirectDatabaseQuery.NoCaching -- Plugin deactivation performs one-time cleanup of this plugin's own transient rows.
+		$option_names = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
+				$pattern
+			)
+		);
+
+		if ( empty( $option_names ) ) {
+			continue;
+		}
+
+		foreach ( $option_names as $option_name ) {
+			delete_option( $option_name );
+		}
+	}
+}
+
 function gpr_finalize_job( $job, $mode ) {
 	$summary = gpr_build_summary( $job );
 

@@ -49,3 +49,9 @@ function gpr_get_download_url() {
 require_once GPR_PLUGIN_DIR . 'includes/password-reset.php';
 require_once GPR_PLUGIN_DIR . 'includes/admin-views.php';
 require_once GPR_PLUGIN_DIR . 'includes/admin-menu.php';
+
+function gpr_deactivate_plugin() {
+	gpr_clear_runtime_state();
+}
+
+register_deactivation_hook( __FILE__, 'gpr_deactivate_plugin' );
