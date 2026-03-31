@@ -121,66 +121,97 @@ function gpr_handle_reset_request() {
 		wp_die( esc_html__( 'You are not allowed to perform this action.', 'group-password-reset' ) );
 	}
 
+	if ( isset( $_GET['gpr_continue'] ) ) {
+		$job_id = isset( $_GET['job_id'] ) ? sanitize_text_field( wp_unslash( $_GET['job_id'] ) ) : '';
+
+		if ( ! gpr_is_valid_job_id( $job_id ) ) {
+			wp_die( esc_html__( 'Invalid reset job.', 'group-password-reset' ) );
+		}
+
+		check_admin_referer( gpr_get_continue_reset_nonce_action( $job_id ) );
+
+		$job = gpr_get_job( $job_id );
+
+		if ( ! is_array( $job ) ) {
+			wp_die( esc_html__( 'No reset job is currently active.', 'group-password-reset' ) );
+		}
+
+		if ( ! gpr_current_user_owns_job( $job ) ) {
+			wp_die( esc_html__( 'You are not allowed to continue this reset job.', 'group-password-reset' ) );
+		}
+
+		$batch_state = gpr_process_job_batch( $job );
+
+		if ( $batch_state['completed'] ) {
+			gpr_finalize_job( $job, 'fallback' );
+			wp_safe_redirect( gpr_get_admin_page_url() );
+			exit;
+		}
+
+		gpr_store_job( $job );
+		wp_safe_redirect( gpr_get_continue_reset_url( $job_id ) );
+		exit;
+	}
+
 	check_admin_referer( 'gpr_reset_passwords' );
+
+	if ( empty( $_POST['gpr_confirm_reset'] ) ) {
+		wp_die( esc_html__( 'You must confirm the password reset before continuing.', 'group-password-reset' ) );
+	}
 
 	$role               = isset( $_POST['gpr_user_role'] ) ? sanitize_key( wp_unslash( $_POST['gpr_user_role'] ) ) : '';
 	$excluded_usernames = isset( $_POST['gpr_excluded_usernames'] ) ? gpr_sanitize_excluded_usernames( wp_unslash( $_POST['gpr_excluded_usernames'] ) ) : '';
 
 	update_option( 'gpr_excluded_usernames', $excluded_usernames );
 
-	$run     = gpr_prepare_reset_run( $role, $excluded_usernames );
-	$results = $run['skipped_results'];
-	$summary = array(
-		'total'     => $run['total_users'],
-		'queued'    => $run['queued_total'],
-		'processed' => count( $run['skipped_results'] ),
-		'success'   => 0,
-		'failed'    => 0,
-		'skipped'   => count( $run['skipped_results'] ),
-	);
-	$job     = array(
-		'role'         => $role,
-		'total_users'  => $run['total_users'],
-		'offset'       => 0,
-		'excluded_ids' => $run['excluded_ids'],
-	);
+	$job = gpr_create_reset_job( $role, $excluded_usernames, get_current_user_id() );
 
-	while ( $job['offset'] < $job['total_users'] ) {
-		$batch = gpr_get_job_batch_users( $job );
-
-		if ( empty( $batch ) ) {
-			continue;
-		}
-
-		foreach ( $batch as $user ) {
-			$result    = gpr_reset_single_user( $user );
-			$results[] = $result;
-			++$summary['processed'];
-
-			if ( 'success' === $result['status'] ) {
-				++$summary['success'];
-			} else {
-				++$summary['failed'];
-			}
-		}
+	if ( $job['queued_total'] <= 0 ) {
+		gpr_store_flash_results(
+			array(
+				'summary'            => gpr_build_summary( $job ),
+				'results'            => $job['initial_results'],
+				'scope_label'        => $job['scope_label'],
+				'excluded_usernames' => $job['excluded_usernames'],
+				'mode'               => 'fallback',
+			)
+		);
+		wp_safe_redirect( gpr_get_admin_page_url() );
+		exit;
 	}
 
-	gpr_store_flash_results(
-		array(
-			'summary'            => $summary,
-			'results'            => $results,
-			'scope_label'        => gpr_get_scope_label( $role ),
-			'excluded_usernames' => $excluded_usernames,
-			'mode'               => 'fallback',
-		)
-	);
+	$batch_state = gpr_process_job_batch( $job );
 
-	wp_safe_redirect( gpr_get_admin_page_url() );
+	if ( $batch_state['completed'] ) {
+		gpr_finalize_job( $job, 'fallback' );
+		wp_safe_redirect( gpr_get_admin_page_url() );
+		exit;
+	}
+
+	gpr_store_job( $job );
+	wp_safe_redirect( gpr_get_continue_reset_url( $job['job_id'] ) );
 	exit;
 }
 
 function gpr_get_admin_page_url() {
 	return admin_url( 'admin.php?page=group-password-reset' );
+}
+
+function gpr_get_continue_reset_nonce_action( $job_id ) {
+	return 'gpr_continue_reset_passwords_' . $job_id;
+}
+
+function gpr_get_continue_reset_url( $job_id ) {
+	$url = add_query_arg(
+		array(
+			'action'       => 'gpr_reset_passwords',
+			'gpr_continue' => 1,
+			'job_id'       => rawurlencode( $job_id ),
+		),
+		admin_url( 'admin-post.php' )
+	);
+
+	return wp_nonce_url( $url, gpr_get_continue_reset_nonce_action( $job_id ) );
 }
 
 add_action( 'admin_init', 'gpr_register_settings' );
