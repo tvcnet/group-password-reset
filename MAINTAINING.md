@@ -35,6 +35,14 @@ This plugin is distributed through GitHub releases rather than WordPress.org. Th
 - Confirm summary totals and per-user statuses stay consistent between async and fallback runs.
 - Confirm reset emails are attempted and that failure states are reported cleanly when mail is unavailable.
 
+## Reviewed Security Reports
+
+- A 2026 follow-up security report was reviewed and recorded as `no action required`.
+- The password-reset-before-email finding is accurate as an availability tradeoff, but it is already intentional and explicitly documented in the admin UI and docs.
+- The missing audit-log IP address finding was treated as an optional forensic enhancement, not a required security fix.
+- The AJAX response PII finding was judged overstated because the endpoints are nonce-protected, `manage_options`-gated, and scoped to the owning admin's job.
+- The suggested remediation of emailing a reset key before calling `wp_set_password()` is not suitable for WordPress because `wp_set_password()` clears `user_activation_key` and would invalidate the emailed reset key.
+
 ## Release Checklist
 
 - Update plugin header metadata in `group-password-reset.php` if compatibility or version values changed.
