@@ -1,6 +1,6 @@
 ===== The Hack Repair Guy's Group Password Reset =====
 
-Contributors: hackrepairguy
+Contributors: hackrepair
 Tags: password reset, bulk actions, user management, security
 Requires at least: 6.8.3
 Tested up to: 6.9
@@ -115,7 +115,3 @@ No. JavaScript enables the batched in-page progress UI, but the main reset flow 
 = 2.1.0 =
 
 - Updated readme files and name.
-
-= 2.0.0 =
-
-- CSS updates.
