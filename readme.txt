@@ -4,7 +4,7 @@ Contributors: hackrepairguy
 Tags: password reset, bulk actions, user management, security
 Requires at least: 6.8.3
 Tested up to: 6.9
-Stable tag: 3.1.0
+Stable tag: 3.2.0
 Requires PHP: 8.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -86,6 +86,11 @@ Passwords are still reset first. If your mail configuration fails, users may be 
 No. JavaScript enables the batched in-page progress UI, but the main reset flow also works through a non-JavaScript fallback.
 
 == Changelog ==
+
+= 3.2.0 =
+
+- Expanded maintainer security guidance with reporting, audit, secret-handling, and review guardrail notes.
+- Kept release hygiene and maintainer documentation aligned with the current security model.
 
 = 3.1.0 =
 

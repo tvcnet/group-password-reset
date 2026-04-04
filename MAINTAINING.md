@@ -43,6 +43,99 @@ This plugin is distributed through GitHub releases rather than WordPress.org. Th
 - The AJAX response PII finding was judged overstated because the endpoints are nonce-protected, `manage_options`-gated, and scoped to the owning admin's job.
 - The suggested remediation of emailing a reset key before calling `wp_set_password()` is not suitable for WordPress because `wp_set_password()` clears `user_activation_key` and would invalidate the emailed reset key.
 
+## Security Notes
+
+### Reporting a Vulnerability
+
+- Do not ask reporters to open public GitHub issues for security vulnerabilities.
+- Prefer GitHub private vulnerability reporting for the repository.
+- If private reporting is unavailable, handle reports through a private maintainer-controlled channel and move discussion out of public threads immediately.
+- Ask reporters to include:
+  - affected version
+  - reproduction steps
+  - required privileges or preconditions
+  - impact summary
+  - proposed fix or mitigation if they have one
+
+### Security Model
+
+- This plugin is an administrator-only WordPress utility.
+- Sensitive actions are expected to require:
+  - `manage_options`
+  - a valid WordPress nonce
+  - ownership of the async reset job for continuation requests
+- The plugin should never expose reset functionality to unauthenticated users or lower-privileged roles.
+- Bulk password reset is intentionally a high-impact administrative action, so security reviews should distinguish:
+  - true access-control flaws
+  - operational risk if an administrator account is already compromised
+
+### Sensitive Data Handling
+
+- Do not persist row-level reset results longer than required for the active run.
+- Completed runs should retain summary-only data wherever possible.
+- Do not store raw API keys, passwords, or reset links in plugin options, transients, logs, or audit records.
+- Avoid storing target usernames or email addresses in audit records.
+- If future features need server-side persistence of user-level result data, document exactly:
+  - what fields are stored
+  - where they are stored
+  - how long they persist
+  - how they are cleared
+
+### Secrets and Configuration
+
+- Never commit `.env`, local config overrides, or tokens to the repository.
+- Any future secret-bearing configuration file must be gitignored by default.
+- Do not log secrets to PHP error logs, browser console output, or audit tables.
+- If a secret is ever committed accidentally, rotate it immediately and remove it from active use.
+
+### Audit Logging Expectations
+
+- Audit logging should record:
+  - who started the reset
+  - the selected scope
+  - whether notifications were attempted
+  - summary counts for success, failed, and skipped results
+  - start and completion events
+- Audit logging should not record:
+  - target passwords
+  - reset keys or links
+  - target email addresses
+  - target username lists
+- Audit data should survive plugin deactivation unless an explicit uninstall policy says otherwise.
+- If retention requirements change, add scheduled pruning rather than silently deleting security-relevant history.
+
+### Mail and Reset Behavior
+
+- The plugin intentionally resets the password before attempting to send the WordPress reset email.
+- This means mail delivery failure can leave users locked out until an administrator communicates through another channel.
+- Keep the admin UI warning and documentation aligned with that behavior.
+- Do not implement a naive "email reset link first, then call `wp_set_password()`" flow without accounting for WordPress core invalidating existing reset keys.
+
+### Security Review Guardrails
+
+- Treat admin-only destructive capability as an operational risk unless a real privilege-boundary bypass exists.
+- Do not classify `network_site_url()`, `admin_url()`, `home_url()`, or static outbound links as SSRF without a real outbound server-side request sink.
+- Do not classify transient TTL usage as a memory leak.
+- Before accepting any report that claims sensitive data is persisted, verify the exact stored payload and not just the active in-memory or AJAX response structure.
+- Prefer one verified finding over several speculative ones.
+
+### Dependency and Release Hygiene
+
+- Re-run `phpcs --standard=phpcs.xml.dist .` before release.
+- Re-run syntax checks before release:
+  - `php -l group-password-reset.php`
+  - `php -l includes/admin-menu.php`
+  - `php -l includes/admin-views.php`
+  - `php -l includes/password-reset.php`
+  - `php -l includes/audit-log.php`
+- Re-run the WordPress Plugin Check plugin before release packaging.
+- Rebuild the release zip only from the final reviewed plugin directory contents.
+- If a release changes security-sensitive behavior, update:
+  - `README.md`
+  - `readme.txt`
+  - the admin UI copy where relevant
+  - this maintainer document
+
 ## Release Checklist
 
 - Update plugin header metadata in `group-password-reset.php` if compatibility or version values changed.
